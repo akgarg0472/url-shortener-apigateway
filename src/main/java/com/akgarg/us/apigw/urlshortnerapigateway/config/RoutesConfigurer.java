@@ -1,6 +1,6 @@
 package com.akgarg.us.apigw.urlshortnerapigateway.config;
 
-import com.akgarg.us.apigw.urlshortnerapigateway.filter.AuthFilter;
+import com.akgarg.us.apigw.urlshortnerapigateway.filter.AuthTokenFilter;
 import com.akgarg.us.apigw.urlshortnerapigateway.filter.ErrorHandlingFilter;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.cloud.gateway.route.RouteLocator;
@@ -11,10 +11,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RoutesConfigurer {
 
-    private final AuthFilter authFilter;
+    private final AuthTokenFilter authTokenFilter;
 
-    public RoutesConfigurer(final AuthFilter authFilter) {
-        this.authFilter = authFilter;
+    public RoutesConfigurer(final AuthTokenFilter authTokenFilter) {
+        this.authTokenFilter = authTokenFilter;
     }
 
     @Bean
@@ -30,9 +30,15 @@ public class RoutesConfigurer {
         routes.route("urlshortener_service", r -> r
                 .path("/api/v1/urlshortener/**")
                 .filters(filterSpec -> filterSpec
-                        .filters(authFilter)
+                        .filters(authTokenFilter)
                         .rewritePath("/api/v1/urlshortener/(?<segment>.*)", "/urlshortener/${segment}"))
                 .uri("lb://urlshortener-service"));
+
+        routes.route("urlshortener-statistics-service", r -> r
+                .path("/api/v1/statistics/**")
+                .filters(filterSpec -> filterSpec.filters(authTokenFilter))
+                .uri("lb://urlshortener-statistics-service")
+        );
 
         routes.route("urlshortener_service_public", r -> r
                 .path("/**")
