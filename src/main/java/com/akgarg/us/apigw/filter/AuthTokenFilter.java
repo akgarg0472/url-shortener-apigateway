@@ -1,16 +1,17 @@
-package com.akgarg.us.apigw.urlshortnerapigateway.filter;
+package com.akgarg.us.apigw.filter;
 
-import com.akgarg.client.authclient.AuthClientBuilder;
-import com.akgarg.client.authclient.cache.AuthTokenCacheStrategy;
-import com.akgarg.client.authclient.client.AuthClient;
+import com.akgarg.client.authclient.AuthClient;
 import com.akgarg.client.authclient.common.AuthServiceEndpoint;
 import com.akgarg.client.authclient.common.ValidateTokenRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
@@ -21,6 +22,8 @@ import java.util.Optional;
 
 @Component
 public class AuthTokenFilter implements GatewayFilter {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthTokenFilter.class);
 
     private static final String USER_ID_HEADER_NAME = "X-USER-ID";
     private static final String AUTHORIZATION_HEADER_NAME = "Authorization";
@@ -34,9 +37,12 @@ public class AuthTokenFilter implements GatewayFilter {
     private final DiscoveryClient discoveryClient;
     private final AuthClient authClient;
 
-    public AuthTokenFilter(final DiscoveryClient discoveryClient) {
+    public AuthTokenFilter(
+            final DiscoveryClient discoveryClient,
+            final AuthClient authClient
+    ) {
         this.discoveryClient = discoveryClient;
-        this.authClient = AuthClientBuilder.builder().cacheStrategy(AuthTokenCacheStrategy.IN_MEMORY).build();
+        this.authClient = authClient;
     }
 
     @Override
@@ -44,7 +50,8 @@ public class AuthTokenFilter implements GatewayFilter {
         final var tokenValidated = validateToken(exchange.getRequest().getHeaders());
 
         if (!tokenValidated) {
-            final var httpResponse = exchange.getResponse();
+            LOGGER.trace("Token validation failed for request: {}", exchange.getRequest().getPath());
+            final ServerHttpResponse httpResponse = exchange.getResponse();
             httpResponse.setStatusCode(HttpStatusCode.valueOf(401));
             httpResponse.getHeaders().add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
             return httpResponse.writeWith(Mono.just(httpResponse.bufferFactory().wrap(UNAUTHENTICATED_RESPONSE.getBytes())));
@@ -58,6 +65,7 @@ public class AuthTokenFilter implements GatewayFilter {
         final var authToken = extractAuthTokenFromRequestHeader(headers);
 
         if (userId.isEmpty() || authToken.isEmpty()) {
+            LOGGER.debug("Token validation failed because user id or auth token is empty");
             return false;
         }
 
@@ -67,13 +75,14 @@ public class AuthTokenFilter implements GatewayFilter {
     }
 
     private Optional<String> extractAuthTokenFromRequestHeader(final HttpHeaders headers) {
-        final var headerValues = headers.get(AUTHORIZATION_HEADER_NAME);
+        final List<String> headerValues = headers.get(AUTHORIZATION_HEADER_NAME);
 
         if (headerValues == null || headerValues.size() != 1) {
+            LOGGER.debug("Auth header is unavailable or has multiple values");
             return Optional.empty();
         }
 
-        final var authHeaderValue = headerValues.get(0);
+        final String authHeaderValue = headerValues.getFirst();
 
         if (authHeaderValue == null || authHeaderValue.isBlank() || !authHeaderValue.startsWith("Bearer ")) {
             return Optional.empty();
@@ -86,10 +95,11 @@ public class AuthTokenFilter implements GatewayFilter {
         final var headerValues = headers.get(USER_ID_HEADER_NAME);
 
         if (headerValues == null || headerValues.size() != 1) {
+            LOGGER.debug("User id header is unavailable or has multiple values");
             return Optional.empty();
         }
 
-        return Optional.of(headerValues.get(0).trim());
+        return Optional.of(headerValues.getFirst().trim());
     }
 
     private List<AuthServiceEndpoint> getAuthServiceEndpoints() {
