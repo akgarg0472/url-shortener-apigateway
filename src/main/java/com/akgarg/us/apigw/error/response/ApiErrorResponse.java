@@ -1,4 +1,4 @@
-package com.akgarg.us.apigw.response;
+package com.akgarg.us.apigw.error.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

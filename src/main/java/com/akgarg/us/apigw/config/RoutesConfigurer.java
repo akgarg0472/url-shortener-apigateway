@@ -28,15 +28,14 @@ public class RoutesConfigurer {
 
         routes.route("urlshortener_service", r -> r
                 .path("/api/v1/urlshortener/**")
-                .filters(filterSpec -> filterSpec
-                        .filters(authTokenFilter)
-                        .rewritePath("/api/v1/urlshortener/(?<segment>.*)", "/urlshortener/${segment}"))
+                // .filters(filterSpec -> filterSpec
+                // .filters(authTokenFilter))
                 .uri("lb://urlshortener-service")
         );
 
         routes.route("urlshortener-statistics-service", r -> r
                 .path("/api/v1/statistics/**")
-                .filters(filterSpec -> filterSpec.filters(authTokenFilter))
+                // .filters(filterSpec -> filterSpec.filters(authTokenFilter))
                 .uri("lb://urlshortener-statistics-service")
         );
 

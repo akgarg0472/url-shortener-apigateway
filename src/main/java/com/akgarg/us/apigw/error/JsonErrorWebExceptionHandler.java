@@ -1,6 +1,6 @@
 package com.akgarg.us.apigw.error;
 
-import com.akgarg.us.apigw.response.ApiErrorResponse;
+import com.akgarg.us.apigw.error.response.ApiErrorResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.boot.autoconfigure.web.WebProperties;
@@ -52,7 +52,7 @@ public class JsonErrorWebExceptionHandler extends AbstractErrorWebExceptionHandl
     @Override
     protected void logError(final ServerRequest request, final ServerResponse response, final Throwable throwable) {
         LOGGER.error(
-                "{}: encountered '{}' while processing request: {}",
+                "{}: '{}' in processing request: {}",
                 request.exchange().getLogPrefix(),
                 throwable.getClass().getSimpleName(),
                 throwable.getMessage()
