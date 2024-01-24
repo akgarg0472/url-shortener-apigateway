@@ -39,6 +39,11 @@ public class RoutesConfigurer {
                 .uri("lb://urlshortener-statistics-service")
         );
 
+        routes.route("urlshortener-profile-service", r -> r
+                .path("/api/v1/profile/**")
+                // .filters(filterSpec -> filterSpec.filters(authTokenFilter))
+                .uri("lb://urlshortener-profile-service"));
+
         routes.route("urlshortener_service_public", r -> r
                 .path("/**")
                 .uri("lb://urlshortener-service")
