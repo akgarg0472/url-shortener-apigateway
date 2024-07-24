@@ -14,9 +14,8 @@ spring:
 
 logging:
   level:
-    com.akgarg.client.authclient: DEBUG
+    com.akgarg.client.authclient: INFO
 #    root: DEBUG
-
 
 auth:
   client:

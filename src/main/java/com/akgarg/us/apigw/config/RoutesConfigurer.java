@@ -28,21 +28,24 @@ public class RoutesConfigurer {
 
         routes.route("urlshortener_service", r -> r
                 .path("/api/v1/urlshortener/**")
-                // .filters(filterSpec -> filterSpec
-                // .filters(authTokenFilter))
+                .filters(filterSpec -> filterSpec.filters(authTokenFilter))
                 .uri("lb://urlshortener-service")
         );
 
         routes.route("urlshortener-statistics-service", r -> r
                 .path("/api/v1/statistics/**")
-                // .filters(filterSpec -> filterSpec.filters(authTokenFilter))
+                .filters(filterSpec -> filterSpec.filters(authTokenFilter))
                 .uri("lb://urlshortener-statistics-service")
         );
 
         routes.route("urlshortener-profile-service", r -> r
-                .path("/api/v1/profile/**")
-                // .filters(filterSpec -> filterSpec.filters(authTokenFilter))
+                .path("/api/v1/profiles/**")
+                .filters(filterSpec -> filterSpec.filters(authTokenFilter))
                 .uri("lb://urlshortener-profile-service"));
+
+        routes.route("urlshortener-payment-service", r -> r
+                .path("/api/v1/payments/**")
+                .uri("lb://urlshortener-payment-service"));
 
         routes.route("urlshortener_service_public", r -> r
                 .path("/**")
