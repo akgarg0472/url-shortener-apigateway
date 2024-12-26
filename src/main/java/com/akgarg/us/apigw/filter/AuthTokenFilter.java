@@ -3,6 +3,7 @@ package com.akgarg.us.apigw.filter;
 import com.akgarg.client.authclient.AuthClient;
 import com.akgarg.client.authclient.common.AuthServiceEndpoint;
 import com.akgarg.client.authclient.common.ValidateTokenRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
@@ -21,18 +22,18 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
+@Slf4j
 public class AuthTokenFilter implements GatewayFilter {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(AuthTokenFilter.class);
 
     private static final String USER_ID_HEADER_NAME = "X-USER-ID";
     private static final String AUTHORIZATION_HEADER_NAME = "Authorization";
     private static final String UNAUTHENTICATED_RESPONSE = """
             {
                 "message": "Unauthorized",
-                "description": "Please log in to access resource",
+                "description": "Please log in to access requested resource",
                 "code": 401
             }""";
+    private static final String AUTH_SERVICE_NAME = "urlshortener-auth-service";
 
     private final DiscoveryClient discoveryClient;
     private final AuthClient authClient;
@@ -50,7 +51,7 @@ public class AuthTokenFilter implements GatewayFilter {
         final var tokenValidated = validateToken(exchange.getRequest().getHeaders());
 
         if (!tokenValidated) {
-            LOGGER.trace("Token validation failed for request: {}", exchange.getRequest().getPath());
+            log.trace("Token validation failed for request: {}", exchange.getRequest().getPath());
             final ServerHttpResponse httpResponse = exchange.getResponse();
             httpResponse.setStatusCode(HttpStatusCode.valueOf(401));
             httpResponse.getHeaders().add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
@@ -65,7 +66,7 @@ public class AuthTokenFilter implements GatewayFilter {
         final var authToken = extractAuthTokenFromRequestHeader(headers);
 
         if (userId.isEmpty() || authToken.isEmpty()) {
-            LOGGER.debug("Token validation failed because user id or auth token is empty");
+            log.info("Token validation failed because user id or auth token is empty");
             return false;
         }
 
@@ -78,7 +79,7 @@ public class AuthTokenFilter implements GatewayFilter {
         final List<String> headerValues = headers.get(AUTHORIZATION_HEADER_NAME);
 
         if (headerValues == null || headerValues.size() != 1) {
-            LOGGER.debug("Auth header is unavailable or has multiple values");
+            log.debug("Auth header is unavailable or has multiple values");
             return Optional.empty();
         }
 
@@ -95,7 +96,7 @@ public class AuthTokenFilter implements GatewayFilter {
         final var headerValues = headers.get(USER_ID_HEADER_NAME);
 
         if (headerValues == null || headerValues.size() != 1) {
-            LOGGER.debug("User id header is unavailable or has multiple values");
+            log.debug("User id header is unavailable or has multiple values");
             return Optional.empty();
         }
 
@@ -103,8 +104,8 @@ public class AuthTokenFilter implements GatewayFilter {
     }
 
     private List<AuthServiceEndpoint> getAuthServiceEndpoints() {
-        final List<AuthServiceEndpoint> endpoints = new ArrayList<>();
-        final var authServiceInstances = discoveryClient.getInstances("urlshortener-auth-service");
+        final var endpoints = new ArrayList<AuthServiceEndpoint>();
+        final var authServiceInstances = discoveryClient.getInstances(AUTH_SERVICE_NAME);
 
         authServiceInstances.forEach(instance -> {
             final var endpoint = new AuthServiceEndpoint(instance.getScheme(), instance.getHost(), instance.getPort());

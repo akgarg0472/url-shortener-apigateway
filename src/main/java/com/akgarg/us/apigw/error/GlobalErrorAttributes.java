@@ -19,9 +19,9 @@ public class GlobalErrorAttributes extends DefaultErrorAttributes {
 
     @Override
     public Map<String, Object> getErrorAttributes(final ServerRequest request, final ErrorAttributeOptions options) {
-        final Map<String, Object> errorAttributes = HashMap.newHashMap(2);
-        final Throwable error = getError(request);
-        final MergedAnnotation<ResponseStatus> responseStatusAnnotation = MergedAnnotations
+        final Map<String, Object> errorAttributes = HashMap.newHashMap(3);
+        final var error = getError(request);
+        final var responseStatusAnnotation = MergedAnnotations
                 .from(error.getClass(), MergedAnnotations.SearchStrategy.TYPE_HIERARCHY)
                 .get(ResponseStatus.class);
         final HttpStatus errorHttpStatus = getErrorHttpStatus(error, responseStatusAnnotation);
