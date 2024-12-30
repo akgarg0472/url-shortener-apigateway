@@ -9,15 +9,12 @@ eureka:
       defaultZone: http://localhost:8761/eureka/
 
 spring:
-  profiles:
-    active: dev
   application:
     name: urlshortener-api-gateway
 
 logging:
   level:
     com.akgarg.client.authclient: INFO
-#    root: DEBUG
 
 auth:
   client:

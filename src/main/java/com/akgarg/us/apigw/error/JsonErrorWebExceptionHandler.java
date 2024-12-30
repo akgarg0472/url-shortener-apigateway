@@ -1,8 +1,7 @@
 package com.akgarg.us.apigw.error;
 
 import com.akgarg.us.apigw.error.response.ApiErrorResponse;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.autoconfigure.web.reactive.error.AbstractErrorWebExceptionHandler;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
@@ -20,9 +19,8 @@ import java.util.Map;
 
 @Component
 @Order(-2)
+@Slf4j
 public class JsonErrorWebExceptionHandler extends AbstractErrorWebExceptionHandler {
-
-    private static final Logger LOGGER = LogManager.getLogger(JsonErrorWebExceptionHandler.class);
 
     /**
      * Create a new {@code AbstractErrorWebExceptionHandler}.
@@ -51,7 +49,7 @@ public class JsonErrorWebExceptionHandler extends AbstractErrorWebExceptionHandl
 
     @Override
     protected void logError(final ServerRequest request, final ServerResponse response, final Throwable throwable) {
-        LOGGER.error(
+        log.error(
                 "{}: '{}' in processing request: {}",
                 request.exchange().getLogPrefix(),
                 throwable.getClass().getSimpleName(),
