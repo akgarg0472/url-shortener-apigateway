@@ -14,7 +14,7 @@ public class GlobalCorsConfiguration {
 
     @Bean
     public CorsWebFilter corsWebFilter() {
-        final CorsConfiguration corsConfig = new CorsConfiguration();
+        final var corsConfig = new CorsConfiguration();
         corsConfig.setAllowedOrigins(Collections.singletonList("*"));
         corsConfig.setMaxAge(3600L);
         corsConfig.setAllowedMethods(List.of("*"));

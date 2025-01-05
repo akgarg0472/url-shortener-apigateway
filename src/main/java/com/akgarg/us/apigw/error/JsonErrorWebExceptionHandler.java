@@ -55,6 +55,7 @@ public class JsonErrorWebExceptionHandler extends AbstractErrorWebExceptionHandl
                 throwable.getClass().getSimpleName(),
                 throwable.getMessage()
         );
+        log.debug("Exception stacktrace:", throwable);
     }
 
     private Mono<ServerResponse> errorJsonResponse(final ServerRequest request) {

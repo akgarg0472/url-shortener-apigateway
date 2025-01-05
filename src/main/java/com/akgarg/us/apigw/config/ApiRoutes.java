@@ -1,0 +1,16 @@
+package com.akgarg.us.apigw.config;
+
+public final class ApiRoutes {
+
+    public static final String AUTH_API_PATH = "/api/v1/auth/**";
+    public static final String URL_SHORTENER_API_PATH = "/api/v1/urlshortener/**";
+    public static final String STATISTICS_API_PATH = "/api/v1/statistics/**";
+    public static final String PROFILE_API_PATH = "/api/v1/profiles/**";
+    public static final String PAYMENT_API_PATH = "/api/v1/payments/**";
+    public static final String GENERIC_API_PATH = "/**";
+
+    private ApiRoutes() {
+        throw new IllegalAccessError("Utility class");
+    }
+
+}

@@ -1,5 +1,8 @@
 # URLShortener API Gateway
 
+![Java Version](https://img.shields.io/badge/Java-21-orange)
+![version](https://img.shields.io/badge/version-2.0.0-blue)
+
 This project is a Spring Boot-based API Gateway for the URL Shortener project. It acts as a reverse proxy that routes
 incoming requests to various backend services in the microservices architecture of the URL Shortener system.
 
@@ -10,6 +13,8 @@ incoming requests to various backend services in the microservices architecture 
 - Configurable via environment variables for logging, server behavior, and routing.
 - Docker container support for easy deployment in containerized environments.
 - Supports scalable and flexible routing for backend services like URL shortening and analytics.
+- Rate Limiting: Built-in support for rate limiting, either in-memory or via Redis, to control traffic and prevent
+  abuse of the URL shortening services.
 
 ## Prerequisites
 
@@ -39,29 +44,47 @@ incoming requests to various backend services in the microservices architecture 
 
 The API Gateway will start, and you can access it at [http://localhost:8765](http://localhost:8765).
 
-### Docker Deployment
+## Environment Variables
 
-To deploy this project as a Docker container, you can pass environment variables to customize the behavior of the Eureka
-Discovery Server.
+| Variable                                | Default Value                   | Description                                                                          |
+|-----------------------------------------|---------------------------------|--------------------------------------------------------------------------------------|
+| `API_GATEWAY_LOG_PATH`                  | `/tmp/logs/gateway`             | Path where Eureka logs will be stored.                                               |
+| `API_GATEWAY_LOG_LEVEL`                 | `INFO`                          | Log level for general application logs.                                              |
+| `API_GATEWAY_LOGGER_REF`                | `consoleLogger`                 | Reference name for the logger (`consoleLogger` or `fileLogger`).                     |
+| `AUTH_CLIENT_REDIS_HOST`                | `localhost`                     | Redis host address for the authentication service.                                   |
+| `AUTH_CLIENT_REDIS_PORT`                | `6379`                          | Redis port for the authentication service.                                           |
+| `AUTH_CLIENT_REDIS_POOL_MAX_TOTAL`      | `128`                           | Maximum number of connections in the Redis pool for the authentication service.      |
+| `AUTH_CLIENT_REDIS_POOL_MAX_IDLE`       | `128`                           | Maximum number of idle connections in the Redis pool for the authentication service. |
+| `AUTH_CLIENT_REDIS_POOL_MIN_IDLE`       | `16`                            | Minimum number of idle connections in the Redis pool for the authentication service. |
+| `SPRING_DATA_REDIS_HOST`                | `localhost`                     | Redis host for the Spring Data Redis connection.                                     |
+| `SPRING_DATA_REDIS_PORT`                | `6379`                          | Redis port for the Spring Data Redis connection.                                     |
+| `SPRING_DATA_REDIS_DATABASE`            | `4`                             | The Redis database number to use (default: 0).                                       |
+| `SPRING_DATA_REDIS_PASSWORD`            | `""`                            | Password for Redis connection (if required).                                         |
+| `SERVER_PORT`                           | `8765`                          | The port where the server will run.                                                  |
+| `EUREKA_CLIENT_REGISTER_WITH_EUREKA`    | `true`                          | Whether to register the service with Eureka or not.                                  |
+| `EUREKA_CLIENT_FETCH_REGISTRY`          | `true`                          | Whether to fetch the service registry from Eureka or not.                            |
+| `EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE` | `http://localhost:8761/eureka/` | The URL for the Eureka service registry.                                             |
 
-#### Environment Variables
+## Docker Deployment
 
-| Variable                 | Default Value       | Description                                                      |
-|--------------------------|---------------------|------------------------------------------------------------------|
-| `API_GATEWAY_LOG_PATH`   | `/tmp/logs/gateway` | Path where Eureka logs will be stored.                           |
-| `API_GATEWAY_LOG_LEVEL`  | `INFO`              | Log level for general application logs.                          |
-| `API_GATEWAY_LOGGER_REF` | `consoleLogger`     | Reference name for the logger (`consoleLogger` or `fileLogger`). |
+The application is Dockerized for simplified deployment. The `Dockerfile` is already configured to build and run the
+Spring Boot application.
 
-#### Building the Docker Image
+The `Dockerfile` defines the build and runtime configuration for the container.
 
-1. Build the Docker image:
+### Building the Docker Image
 
-   ```bash
-   docker build -t akgarg0472/urlshortener-api-gateway:tag .
-   ```
+To build the Docker image, run the following command:
 
-2. Run the container:
-    ```bash
+```bash
+docker build -t akgarg0472/urlshortener-api-gateway:tag .
+```
+
+### Run the Docker Container
+
+You can run the application with custom environment variables using the docker run command. For example:
+
+```bash
    docker run -d \
        -p 8765:8765 \
        -e API_GATEWAY_LOG_PATH=/tmp/logs/apigateway \
@@ -71,22 +94,9 @@ Discovery Server.
        --network=host \
        --name api-gateway \
        akgarg0472/urlshortener-api-gateway:tag
-   ```
+```
 
-   > Note: If API_GATEWAY_LOGGER_REF is set to fileLogger, you must bind the log directory to a host path using the -v
-   option as shown above.
+> Note: If API_GATEWAY_LOGGER_REF is set to fileLogger, you must bind the log directory to a host path using the -v
+> option as shown above.
 
 The API Gateway will be accessible at http://localhost:8765 on the host machine.
-
-### Customization
-
-You can further customize the application by modifying the `application.yml` file or overriding specific properties
-using environment variables or command-line arguments.
-
-## Logging Configuration
-
-The project uses the following logging configuration:
-
-- **Log Path:** Controlled by the `API_GATEWAY_LOG_PATH` variable.
-- **Log Level:** Configurable using `API_GATEWAY_LOG_LEVEL` variable.
-- **Logger Reference:** Defined by `API_GATEWAY_LOGGER_REF` for more granular control over logging.
