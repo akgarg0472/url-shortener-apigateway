@@ -59,7 +59,7 @@ public class RateLimiterFilter extends AbstractApiGatewayFilter {
     public Mono<Void> filter(final ServerWebExchange exchange, final GatewayFilterChain chain) {
         final var requestPath = exchange.getRequest().getURI().getPath();
 
-        log.info("Request path: {}", requestPath);
+        log.debug("Checking rate limit for path: {}", requestPath);
 
         for (final var path : rateLimitingStrategies.entrySet()) {
             if (!pathMatcher.match(path.getKey(), requestPath)) {
