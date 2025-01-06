@@ -21,7 +21,7 @@ import java.util.Optional;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class RateLimiterFilter extends AbstractGatewayFilter {
+public class RateLimiterFilter extends AbstractApiGatewayFilter {
 
     private static final Map<String, RateLimitingStrategy> rateLimitingStrategies = new LinkedHashMap<>();
     private static final AntPathMatcher pathMatcher = new AntPathMatcher();
@@ -59,6 +59,8 @@ public class RateLimiterFilter extends AbstractGatewayFilter {
     public Mono<Void> filter(final ServerWebExchange exchange, final GatewayFilterChain chain) {
         final var requestPath = exchange.getRequest().getURI().getPath();
 
+        log.info("Request path: {}", requestPath);
+
         for (final var path : rateLimitingStrategies.entrySet()) {
             if (!pathMatcher.match(path.getKey(), requestPath)) {
                 continue;
@@ -76,7 +78,7 @@ public class RateLimiterFilter extends AbstractGatewayFilter {
                     return httpResponse.writeWith(Mono.just(httpResponse.bufferFactory().wrap(USER_ID_FETCH_FAILURE_RESPONSE.getBytes())));
                 }
 
-                isRateLimited = rateLimiterService.isRateLimited(path.getKey(), userId.get());
+                isRateLimited = rateLimiterService.isRateLimited(path.getKey(), requestPath, userId.get());
             } else {
                 final var ip = extractClientIp(exchange);
 
@@ -87,7 +89,7 @@ public class RateLimiterFilter extends AbstractGatewayFilter {
                     return httpResponse.writeWith(Mono.just(httpResponse.bufferFactory().wrap(IP_FETCH_FAILURE_RESPONSE.getBytes())));
                 }
 
-                isRateLimited = rateLimiterService.isRateLimited(path.getKey(), ip.get());
+                isRateLimited = rateLimiterService.isRateLimited(path.getKey(), requestPath, ip.get());
             }
 
             if (isRateLimited) {

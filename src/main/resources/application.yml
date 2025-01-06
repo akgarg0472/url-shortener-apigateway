@@ -1,5 +1,5 @@
 server:
-  port: 8765
+  port: 8766
 
 eureka:
   client:
@@ -31,3 +31,13 @@ auth:
         max-total: 128
         max-idle: 128
         min-idle: 16
+
+rate-limiter:
+  limits:
+    per-minute:
+      "/api/v1/auth/**": 10
+      "/api/v1/urlshortener/**": 10
+      "/api/v1/statistics/**": 10
+      "/api/v1/profiles/**": 10
+      "/api/v1/payments/**": 10
+      "/**": 50

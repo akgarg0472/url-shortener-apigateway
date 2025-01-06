@@ -1,7 +1,7 @@
 # URLShortener API Gateway
 
 ![Java Version](https://img.shields.io/badge/Java-21-orange)
-![version](https://img.shields.io/badge/version-2.0.0-blue)
+![version](https://img.shields.io/badge/version-2.1.0-blue)
 
 This project is a Spring Boot-based API Gateway for the URL Shortener project. It acts as a reverse proxy that routes
 incoming requests to various backend services in the microservices architecture of the URL Shortener system.
@@ -65,6 +65,36 @@ The API Gateway will start, and you can access it at [http://localhost:8765](htt
 | `EUREKA_CLIENT_FETCH_REGISTRY`          | `true`                          | Whether to fetch the service registry from Eureka or not.                            |
 | `EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE` | `http://localhost:8761/eureka/` | The URL for the Eureka service registry.                                             |
 
+## API Rate Limiting Configuration
+
+This configuration is used to define the rate-limiting settings for various API endpoints, ensuring that requests are
+limited to a certain threshold within a specified time window. It helps protect your APIs from abuse and ensures fair
+usage by limiting the number of requests clients can make.
+
+```bash
+RATE_LIMITER_LIMITS_PER_MINUTE_API_V1_AUTH=10
+RATE_LIMITER_LIMITS_PER_MINUTE_API_V1_URLSHORTENER=10
+RATE_LIMITER_LIMITS_PER_MINUTE_API_V1_STATISTICS=10
+RATE_LIMITER_LIMITS_PER_MINUTE_API_V1_PROFILES=10
+RATE_LIMITER_LIMITS_PER_MINUTE_API_V1_PAYMENTS=10
+RATE_LIMITER_LIMITS_PER_MINUTE_ALL=50
+```
+
+**Breakdown of the Configuration**:
+
+- **`RATE_LIMITER_LIMITS_PER_MINUTE_API_V1_AUTH`**: The API path related to authentication is limited to **10 requests
+  per minute**.
+- **`RATE_LIMITER_LIMITS_PER_MINUTE_API_V1_URLSHORTENER`**: The API path for URL shortening is limited to **10 requests
+  per minute**.
+- **`RATE_LIMITER_LIMITS_PER_MINUTE_API_V1_STATISTICS`**: The API path for fetching statistics is limited to **10
+  requests per minute**.
+- **`RATE_LIMITER_LIMITS_PER_MINUTE_API_V1_PROFILES`**: The API path for user profiles is limited to **10 requests per
+  minute**.
+- **`RATE_LIMITER_LIMITS_PER_MINUTE_API_V1_PAYMENTS`**: The API path for payments is limited to **10 requests per minute
+  **.
+- **`RATE_LIMITER_LIMITS_PER_MINUTE_ALL`**: A global catch-all for all other paths, limited to **50 requests per minute
+  **.
+
 ## Docker Deployment
 
 The application is Dockerized for simplified deployment. The `Dockerfile` is already configured to build and run the
@@ -76,8 +106,8 @@ The `Dockerfile` defines the build and runtime configuration for the container.
 
 To build the Docker image, run the following command:
 
-```bash
-docker build -t akgarg0472/urlshortener-api-gateway:tag .
+  ```bash
+  docker build -t akgarg0472/urlshortener-api-gateway:tag .
 ```
 
 ### Run the Docker Container

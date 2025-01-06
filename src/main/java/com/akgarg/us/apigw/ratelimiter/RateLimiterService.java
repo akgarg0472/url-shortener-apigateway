@@ -17,14 +17,15 @@ public interface RateLimiterService {
      * has exceeded the predefined rate limit. The identifier could represent a user's IP address,
      * user ID, or any other unique client identifier.</p>
      *
-     * @param requestedPath the API path or endpoint that the client is trying to access.
-     *                      This could be a specific URL or route pattern.
-     * @param identifier    the client identifier for the request, such as the user's IP address
-     *                      or user ID. This value is used to track the client's request count.
+     * @param apiRoute    the base route of API that client is trying to access
+     * @param requestPath the API path or endpoint that the client is trying to access.
+     *                    This could be a specific URL or route pattern.
+     * @param identifier  the client identifier for the request, such as the user's IP address
+     *                    or user ID. This value is used to track the client's request count.
      * @return {@code true} if the request is rate-limited (i.e., the request count exceeds the allowed
      * rate for the specified path and identifier), otherwise {@code false}.
      * @throws IllegalArgumentException if either of the parameters is {@code null} or empty.
      */
-    boolean isRateLimited(String requestedPath, String identifier);
+    boolean isRateLimited(String apiRoute, String requestPath, String identifier);
 
 }

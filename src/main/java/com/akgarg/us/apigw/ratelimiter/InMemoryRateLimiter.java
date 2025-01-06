@@ -4,10 +4,12 @@ import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -50,6 +52,11 @@ public class InMemoryRateLimiter extends AbstractRateLimiterService {
      */
     private final Map<String, Long> timestampMap = new HashMap<>();
 
+    public InMemoryRateLimiter(final Environment environment) {
+        super();
+        updateAllowedRequestsPerMinute(Objects.requireNonNull(environment, "environment is required"));
+    }
+
     /**
      * Starts the eviction task after the bean is initialized.
      * The eviction task will run periodically to remove expired entries from the maps.
@@ -61,18 +68,22 @@ public class InMemoryRateLimiter extends AbstractRateLimiterService {
     }
 
     @Override
-    public boolean isRateLimited(final String requestedPath, final String identifier) {
-        if (requestedPath == null || identifier == null || requestedPath.isBlank() || identifier.isBlank()) {
+    public boolean isRateLimited(final String apiRoute, final String requestPath, final String identifier) {
+        if (apiRoute == null || apiRoute.isBlank()) {
+            throw new IllegalArgumentException("Invalid apiRoute provided");
+        }
+
+        if (requestPath == null || identifier == null || requestPath.isBlank() || identifier.isBlank()) {
             throw new IllegalArgumentException("Invalid requested path or identifier.");
         }
 
-        final var allowedRequests = allowedRequestsPerMinute.get(requestedPath);
+        final var allowedRequests = AbstractRateLimiterService.allowedRequests.get(apiRoute);
 
         if (allowedRequests == null) {
             return false;
         }
 
-        final var key = createKey(requestedPath, identifier);
+        final var key = createKey(requestPath, identifier);
         final var lastRequestTime = timestampMap.getOrDefault(key, 0L);
 
         if (System.currentTimeMillis() - lastRequestTime > TTL_PERIOD_MS) {

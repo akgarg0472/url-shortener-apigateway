@@ -7,7 +7,7 @@ import org.springframework.http.HttpHeaders;
 import java.util.Optional;
 
 @Slf4j
-public abstract class AbstractGatewayFilter implements GatewayFilter {
+public abstract class AbstractApiGatewayFilter implements GatewayFilter {
 
     private static final String USER_ID_HEADER_NAME = "X-USER-ID";
 

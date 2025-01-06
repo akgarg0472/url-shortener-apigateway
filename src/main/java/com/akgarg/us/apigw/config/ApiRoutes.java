@@ -1,5 +1,7 @@
 package com.akgarg.us.apigw.config;
 
+import java.util.List;
+
 public final class ApiRoutes {
 
     public static final String AUTH_API_PATH = "/api/v1/auth/**";
@@ -11,6 +13,17 @@ public final class ApiRoutes {
 
     private ApiRoutes() {
         throw new IllegalAccessError("Utility class");
+    }
+
+    public static List<String> getApiPaths() {
+        return List.of(
+                AUTH_API_PATH,
+                URL_SHORTENER_API_PATH,
+                STATISTICS_API_PATH,
+                PROFILE_API_PATH,
+                PAYMENT_API_PATH,
+                GENERIC_API_PATH
+        );
     }
 
 }

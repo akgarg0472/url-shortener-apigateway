@@ -1,18 +1,18 @@
 package com.akgarg.us.apigw.ratelimiter;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.Environment;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
 @Profile({"prod", "PROD"})
-@RequiredArgsConstructor
 public class RedisRateLimiter extends AbstractRateLimiterService {
 
     private static final String RATE_LIMIT_PREFIX = "rateLimit:";
@@ -20,13 +20,19 @@ public class RedisRateLimiter extends AbstractRateLimiterService {
 
     private final RedisTemplate<String, Integer> redisTemplate;
 
+    public RedisRateLimiter(final RedisTemplate<String, Integer> redisTemplate, final Environment environment) {
+        super();
+        updateAllowedRequestsPerMinute(Objects.requireNonNull(environment, "environment is required"));
+        this.redisTemplate = redisTemplate;
+    }
+
     @Override
-    public boolean isRateLimited(final String requestedPath, final String identifier) {
-        if (requestedPath == null || identifier == null || requestedPath.isBlank() || identifier.isBlank()) {
+    public boolean isRateLimited(final String apiRoute, final String requestPath, final String identifier) {
+        if (requestPath == null || identifier == null || requestPath.isBlank() || identifier.isBlank()) {
             throw new IllegalArgumentException("Invalid requested path or identifier.");
         }
 
-        final var key = RATE_LIMIT_PREFIX + createKey(requestedPath, identifier);
+        final var key = RATE_LIMIT_PREFIX + createKey(requestPath, identifier);
         final var valueOperations = redisTemplate.opsForValue();
 
         final var currentRequestCount = valueOperations.get(key);
@@ -37,7 +43,11 @@ public class RedisRateLimiter extends AbstractRateLimiterService {
             return false;
         }
 
-        final var allowedRequests = allowedRequestsPerMinute.get(requestedPath);
+        final var allowedRequests = AbstractRateLimiterService.allowedRequests.get(apiRoute);
+
+        if (allowedRequests == null) {
+            return false;
+        }
 
         if (currentRequestCount >= allowedRequests) {
             log.trace("Rate limit exceeded for key: {}. Current count: {}, Allowed: {}", key, currentRequestCount, allowedRequests);
