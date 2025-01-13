@@ -16,6 +16,6 @@ WORKDIR /app
 COPY --from=build /app/target/UrlShortenerApiGateway.jar .
 
 # Set the default active profile to 'dev', can be overridden at runtime
-ENV SPRING_PROFILES_ACTIVE=dev
+ENV SPRING_PROFILES_ACTIVE=prod
 
 CMD ["java", "-jar", "UrlShortenerApiGateway.jar"]

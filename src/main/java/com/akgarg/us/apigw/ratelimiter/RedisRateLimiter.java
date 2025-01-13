@@ -12,8 +12,8 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
-@Profile({"prod", "PROD"})
-public class RedisRateLimiter extends AbstractRateLimiterService {
+@Profile("prod")
+public class RedisRateLimiter extends AbstractRateLimiter {
 
     private static final String RATE_LIMIT_PREFIX = "rateLimit:";
     private static final long TTL = Duration.ofMinutes(1).toMillis();
@@ -43,7 +43,7 @@ public class RedisRateLimiter extends AbstractRateLimiterService {
             return false;
         }
 
-        final var allowedRequests = AbstractRateLimiterService.allowedRequests.get(apiRoute);
+        final var allowedRequests = AbstractRateLimiter.allowedRequests.get(apiRoute);
 
         if (allowedRequests == null) {
             return false;

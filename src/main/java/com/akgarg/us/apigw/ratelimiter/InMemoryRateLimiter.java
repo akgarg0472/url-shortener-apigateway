@@ -23,8 +23,8 @@ import java.util.concurrent.TimeUnit;
  */
 @Service
 @Slf4j
-@Profile({"dev", "DEV"})
-public class InMemoryRateLimiter extends AbstractRateLimiterService {
+@Profile({"default", "dev"})
+public class InMemoryRateLimiter extends AbstractRateLimiter {
 
     /**
      * The interval at which the eviction task runs to remove expired entries, in milliseconds.
@@ -77,7 +77,7 @@ public class InMemoryRateLimiter extends AbstractRateLimiterService {
             throw new IllegalArgumentException("Invalid requested path or identifier.");
         }
 
-        final var allowedRequests = AbstractRateLimiterService.allowedRequests.get(apiRoute);
+        final var allowedRequests = AbstractRateLimiter.allowedRequests.get(apiRoute);
 
         if (allowedRequests == null) {
             return false;

@@ -1,7 +1,7 @@
 package com.akgarg.us.apigw.filter;
 
 import com.akgarg.us.apigw.config.ApiRoutes;
-import com.akgarg.us.apigw.ratelimiter.RateLimiterService;
+import com.akgarg.us.apigw.ratelimiter.RateLimiter;
 import com.akgarg.us.apigw.ratelimiter.RateLimitingStrategy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,7 +53,7 @@ public class RateLimiterFilter extends AbstractApiGatewayFilter {
         rateLimitingStrategies.put(ApiRoutes.GENERIC_API_PATH, RateLimitingStrategy.IP);
     }
 
-    private final RateLimiterService rateLimiterService;
+    private final RateLimiter rateLimiter;
 
     @Override
     public Mono<Void> filter(final ServerWebExchange exchange, final GatewayFilterChain chain) {
@@ -78,7 +78,7 @@ public class RateLimiterFilter extends AbstractApiGatewayFilter {
                     return httpResponse.writeWith(Mono.just(httpResponse.bufferFactory().wrap(USER_ID_FETCH_FAILURE_RESPONSE.getBytes())));
                 }
 
-                isRateLimited = rateLimiterService.isRateLimited(path.getKey(), requestPath, userId.get());
+                isRateLimited = rateLimiter.isRateLimited(path.getKey(), requestPath, userId.get());
             } else {
                 final var ip = extractClientIp(exchange);
 
@@ -89,7 +89,7 @@ public class RateLimiterFilter extends AbstractApiGatewayFilter {
                     return httpResponse.writeWith(Mono.just(httpResponse.bufferFactory().wrap(IP_FETCH_FAILURE_RESPONSE.getBytes())));
                 }
 
-                isRateLimited = rateLimiterService.isRateLimited(path.getKey(), requestPath, ip.get());
+                isRateLimited = rateLimiter.isRateLimited(path.getKey(), requestPath, ip.get());
             }
 
             if (isRateLimited) {

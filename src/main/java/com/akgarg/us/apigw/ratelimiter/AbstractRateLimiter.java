@@ -9,7 +9,7 @@ import java.util.Map;
 
 /**
  * {@code AbstractRateLimiterService} provides the base functionality for rate-limiting services.
- * It implements the {@link RateLimiterService} interface and defines common methods and configurations
+ * It implements the {@link RateLimiter} interface and defines common methods and configurations
  * shared across different rate limiter implementations.
  * <p>
  * This abstract class holds a static map to configure the allowed requests per minute for various API paths.
@@ -18,7 +18,7 @@ import java.util.Map;
  * <p>
  */
 @Slf4j
-public abstract class AbstractRateLimiterService implements RateLimiterService {
+public abstract class AbstractRateLimiter implements RateLimiter {
 
     /**
      * A map storing the allowed number of requests for a certain interval for each API route.

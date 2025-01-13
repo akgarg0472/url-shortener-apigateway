@@ -8,7 +8,7 @@ package com.akgarg.us.apigw.ratelimiter;
  * Rate limiting is useful for controlling the frequency of requests to specific endpoints,
  * ensuring fair usage, and protecting against abuse such as brute-force attacks.
  */
-public interface RateLimiterService {
+public interface RateLimiter {
 
     /**
      * Checks if a request is rate-limited based on the provided path and client identifier.
