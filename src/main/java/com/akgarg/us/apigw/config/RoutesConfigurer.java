@@ -48,8 +48,13 @@ public class RoutesConfigurer {
 
         routes.route("urlshortener-payment-service", r -> r
                 .path(ApiRoutes.PAYMENT_API_PATH)
-//                .filters(filterSpec -> filterSpec.filters(requestIdFilter, rateLimiterFilter, authTokenFilter))
+                .filters(filterSpec -> filterSpec.filters(requestIdFilter, rateLimiterFilter, authTokenFilter))
                 .uri("lb://urlshortener-payment-service"));
+
+        routes.route("urlshortener-subscription-service", r -> r
+                .path(ApiRoutes.SUBSCRIPTION_API_PATH)
+                .filters(filterSpec -> filterSpec.filters(requestIdFilter, rateLimiterFilter, authTokenFilter))
+                .uri("lb://urlshortener-subscription-service"));
 
         routes.route("urlshortener_service_public", r -> r
                 .path("/**")
