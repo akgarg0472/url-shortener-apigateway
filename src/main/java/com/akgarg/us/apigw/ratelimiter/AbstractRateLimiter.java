@@ -38,12 +38,14 @@ public abstract class AbstractRateLimiter implements RateLimiter {
     static final Map<String, Integer> allowedRequests = new HashMap<>();
 
     static {
-        allowedRequests.put(ApiRoutes.AUTH_API_PATH, 10);
+        allowedRequests.put(ApiRoutes.SUBSCRIPTION_PACKS_API_PATH, 50);
         allowedRequests.put(ApiRoutes.URL_SHORTENER_API_PATH, 10);
+        allowedRequests.put(ApiRoutes.SUBSCRIPTION_API_PATH, 50);
         allowedRequests.put(ApiRoutes.STATISTICS_API_PATH, 10);
         allowedRequests.put(ApiRoutes.PROFILE_API_PATH, 10);
         allowedRequests.put(ApiRoutes.PAYMENT_API_PATH, 10);
         allowedRequests.put(ApiRoutes.GENERIC_API_PATH, 50);
+        allowedRequests.put(ApiRoutes.AUTH_API_PATH, 10);
     }
 
     /**

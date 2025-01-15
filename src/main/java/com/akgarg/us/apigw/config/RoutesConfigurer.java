@@ -3,6 +3,7 @@ package com.akgarg.us.apigw.config;
 import com.akgarg.us.apigw.filter.AuthTokenFilter;
 import com.akgarg.us.apigw.filter.RateLimiterFilter;
 import com.akgarg.us.apigw.filter.RequestIdFilter;
+import jakarta.ws.rs.HttpMethod;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
@@ -50,6 +51,13 @@ public class RoutesConfigurer {
                 .path(ApiRoutes.PAYMENT_API_PATH)
                 .filters(filterSpec -> filterSpec.filters(requestIdFilter, rateLimiterFilter, authTokenFilter))
                 .uri("lb://urlshortener-payment-service"));
+
+        routes.route("urlshortener-subscription-packs", r -> r
+                .path(ApiRoutes.SUBSCRIPTION_PACKS_API_PATH)
+                .and()
+                .method(HttpMethod.GET)
+                .filters(filterSpec -> filterSpec.filters(requestIdFilter, rateLimiterFilter))
+                .uri("lb://urlshortener-subscription-service"));
 
         routes.route("urlshortener-subscription-service", r -> r
                 .path(ApiRoutes.SUBSCRIPTION_API_PATH)

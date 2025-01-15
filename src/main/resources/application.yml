@@ -43,4 +43,5 @@ rate-limiter:
       "/api/v1/profiles/**": 20
       "/api/v1/payments/**": 20
       "/api/v1/subscriptions/**": 20
+      "/api/v1/subscriptions/packs/**": 50
       "/**": 50

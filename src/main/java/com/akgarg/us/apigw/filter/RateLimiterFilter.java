@@ -23,7 +23,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class RateLimiterFilter extends AbstractApiGatewayFilter {
 
-    private static final Map<String, RateLimitingStrategy> rateLimitingStrategies = new LinkedHashMap<>();
+    private static final Map<String, RateLimitingStrategy> rateLimiterPathStrategies = new LinkedHashMap<>();
     private static final AntPathMatcher pathMatcher = new AntPathMatcher();
     private static final String IP_FETCH_FAILURE_RESPONSE = """
             {
@@ -45,30 +45,33 @@ public class RateLimiterFilter extends AbstractApiGatewayFilter {
             }""";
 
     static {
-        rateLimitingStrategies.put(ApiRoutes.URL_SHORTENER_API_PATH, RateLimitingStrategy.USER_ID);
-        rateLimitingStrategies.put(ApiRoutes.STATISTICS_API_PATH, RateLimitingStrategy.USER_ID);
-        rateLimitingStrategies.put(ApiRoutes.PROFILE_API_PATH, RateLimitingStrategy.USER_ID);
-        rateLimitingStrategies.put(ApiRoutes.PAYMENT_API_PATH, RateLimitingStrategy.USER_ID);
-        rateLimitingStrategies.put(ApiRoutes.AUTH_API_PATH, RateLimitingStrategy.IP);
-        rateLimitingStrategies.put(ApiRoutes.GENERIC_API_PATH, RateLimitingStrategy.IP);
+        rateLimiterPathStrategies.put(ApiRoutes.SUBSCRIPTION_PACKS_API_PATH, RateLimitingStrategy.IP);
+        rateLimiterPathStrategies.put(ApiRoutes.URL_SHORTENER_API_PATH, RateLimitingStrategy.USER_ID);
+        rateLimiterPathStrategies.put(ApiRoutes.SUBSCRIPTION_API_PATH, RateLimitingStrategy.USER_ID);
+        rateLimiterPathStrategies.put(ApiRoutes.STATISTICS_API_PATH, RateLimitingStrategy.USER_ID);
+        rateLimiterPathStrategies.put(ApiRoutes.PROFILE_API_PATH, RateLimitingStrategy.USER_ID);
+        rateLimiterPathStrategies.put(ApiRoutes.PAYMENT_API_PATH, RateLimitingStrategy.USER_ID);
+        rateLimiterPathStrategies.put(ApiRoutes.AUTH_API_PATH, RateLimitingStrategy.IP);
+        rateLimiterPathStrategies.put(ApiRoutes.GENERIC_API_PATH, RateLimitingStrategy.IP);
     }
 
     private final RateLimiter rateLimiter;
 
     @Override
+    @SuppressWarnings("squid:S135")
     public Mono<Void> filter(final ServerWebExchange exchange, final GatewayFilterChain chain) {
         final var requestPath = exchange.getRequest().getURI().getPath();
 
         log.debug("Checking rate limit for path: {}", requestPath);
 
-        for (final var path : rateLimitingStrategies.entrySet()) {
-            if (!pathMatcher.match(path.getKey(), requestPath)) {
+        for (final var pathStrategy : rateLimiterPathStrategies.entrySet()) {
+            if (!pathMatcher.match(pathStrategy.getKey(), requestPath)) {
                 continue;
             }
 
             final boolean isRateLimited;
 
-            if (path.getValue() == RateLimitingStrategy.USER_ID) {
+            if (pathStrategy.getValue() == RateLimitingStrategy.USER_ID) {
                 final var userId = extractUserIdFromRequestHeader(exchange.getRequest().getHeaders());
 
                 if (userId.isEmpty()) {
@@ -78,7 +81,7 @@ public class RateLimiterFilter extends AbstractApiGatewayFilter {
                     return httpResponse.writeWith(Mono.just(httpResponse.bufferFactory().wrap(USER_ID_FETCH_FAILURE_RESPONSE.getBytes())));
                 }
 
-                isRateLimited = rateLimiter.isRateLimited(path.getKey(), requestPath, userId.get());
+                isRateLimited = rateLimiter.isRateLimited(pathStrategy.getKey(), requestPath, userId.get());
             } else {
                 final var ip = extractClientIp(exchange);
 
@@ -89,7 +92,7 @@ public class RateLimiterFilter extends AbstractApiGatewayFilter {
                     return httpResponse.writeWith(Mono.just(httpResponse.bufferFactory().wrap(IP_FETCH_FAILURE_RESPONSE.getBytes())));
                 }
 
-                isRateLimited = rateLimiter.isRateLimited(path.getKey(), requestPath, ip.get());
+                isRateLimited = rateLimiter.isRateLimited(pathStrategy.getKey(), requestPath, ip.get());
             }
 
             if (isRateLimited) {
@@ -98,6 +101,8 @@ public class RateLimiterFilter extends AbstractApiGatewayFilter {
                 httpResponse.getHeaders().add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
                 return httpResponse.writeWith(Mono.just(httpResponse.bufferFactory().wrap(RATE_LIMIT_EXCEEDED_RESPONSE.getBytes())));
             }
+
+            break;
         }
 
         return chain.filter(exchange);
