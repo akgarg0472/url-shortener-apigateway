@@ -24,9 +24,7 @@ public class RoutesConfigurer {
 
         routes.route("auth_service", r -> r
                 .path(ApiRoutes.AUTH_API_PATH)
-                .filters(filterSpec -> filterSpec
-                        .filters(requestIdFilter, rateLimiterFilter)
-                        .rewritePath("/api/(?<version>.*)/auth/(?<segment>.*)", "/auth/${version}/${segment}"))
+                .filters(filterSpec -> filterSpec.filters(requestIdFilter, rateLimiterFilter))
                 .uri("lb://urlshortener-auth-service")
         );
 
