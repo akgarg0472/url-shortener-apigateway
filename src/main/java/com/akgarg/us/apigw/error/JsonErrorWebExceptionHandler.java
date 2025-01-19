@@ -1,6 +1,5 @@
 package com.akgarg.us.apigw.error;
 
-import com.akgarg.us.apigw.error.response.ApiErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.autoconfigure.web.reactive.error.AbstractErrorWebExceptionHandler;

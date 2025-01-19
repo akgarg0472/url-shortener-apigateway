@@ -1,6 +1,6 @@
 package com.akgarg.us.apigw.security;
 
-import com.akgarg.us.apigw.error.response.ApiErrorResponse;
+import com.akgarg.us.apigw.error.ApiErrorResponse;
 import com.akgarg.us.apigw.exception.ApiGatewayException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;

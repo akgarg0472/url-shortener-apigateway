@@ -1,4 +1,4 @@
-package com.akgarg.us.apigw.error.response;
+package com.akgarg.us.apigw.error;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.http.HttpStatus;
