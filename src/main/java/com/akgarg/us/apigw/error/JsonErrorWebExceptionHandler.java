@@ -8,8 +8,10 @@ import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.reactive.error.ErrorAttributes;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerCodecConfigurer;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.*;
@@ -55,12 +57,25 @@ public class JsonErrorWebExceptionHandler extends AbstractErrorWebExceptionHandl
                 throwable.getClass().getSimpleName(),
                 throwable.getMessage()
         );
-        log.debug("Exception stacktrace:", throwable);
+        if (log.isDebugEnabled()) {
+            log.error("Exception stacktrace:", throwable);
+        }
     }
 
     private Mono<ServerResponse> errorJsonResponse(final ServerRequest request) {
         final var errorAttributes = getErrorAttributes(request, ErrorAttributeOptions.defaults());
-        final var errorResponse = getApiErrorResponse(errorAttributes);
+        final var throwable = getError(request);
+        final ApiErrorResponse errorResponse;
+
+        if (throwable instanceof UsernameNotFoundException) {
+            errorResponse = new ApiErrorResponse(
+                    HttpStatus.BAD_REQUEST.value(),
+                    errorAttributes.get("requestId"),
+                    throwable.getMessage()
+            );
+        } else {
+            errorResponse = getApiErrorResponse(errorAttributes);
+        }
 
         return ServerResponse.status(errorResponse.statusCode())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -70,7 +85,7 @@ public class JsonErrorWebExceptionHandler extends AbstractErrorWebExceptionHandl
     private ApiErrorResponse getApiErrorResponse(final Map<String, Object> errorAttributes) {
         final var errorHttpStatusCode = (int) errorAttributes.getOrDefault("status", 500);
         final var errorMessage = errorAttributes.getOrDefault("message", "Internal Server Error").toString();
-        final var traceId = errorAttributes.get("traceId");
+        final var traceId = errorAttributes.get("requestId");
 
         return new ApiErrorResponse(
                 errorHttpStatusCode,

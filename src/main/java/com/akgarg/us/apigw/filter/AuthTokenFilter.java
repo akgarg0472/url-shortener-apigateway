@@ -40,7 +40,7 @@ public class AuthTokenFilter extends AbstractApiGatewayFilter {
         final var tokenValidated = validateToken(exchange.getRequest().getHeaders());
 
         if (!tokenValidated) {
-            log.trace("Token validation failed for request: {}", exchange.getRequest().getPath());
+            log.info("Token validation failed for request: {}", exchange.getRequest().getPath());
             final var httpResponse = exchange.getResponse();
             httpResponse.setStatusCode(HttpStatusCode.valueOf(401));
             httpResponse.getHeaders().add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
