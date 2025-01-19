@@ -20,7 +20,7 @@ public class BeanConfig {
                 .cacheStrategy(AuthTokenCacheStrategy.IN_MEMORY)
                 .build();
     }
-    
+
     @Profile({"prod", "PROD"})
     @Bean
     public AuthClient redisAuthClient(final Environment environment) {

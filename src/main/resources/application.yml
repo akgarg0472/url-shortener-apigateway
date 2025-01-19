@@ -38,6 +38,7 @@ auth:
     endpoints:
       verify-admin: /api/v1/auth/verify-admin
 
+# noinspection SpringBootApplicationYaml
 rate-limiter:
   limits:
     per-minute:
