@@ -3,6 +3,7 @@ package com.akgarg.us.apigw.config;
 import com.akgarg.client.authclient.AuthClient;
 import com.akgarg.client.authclient.AuthClientBuilder;
 import com.akgarg.client.authclient.cache.AuthTokenCacheStrategy;
+import com.akgarg.client.authclient.common.ApiVersion;
 import com.akgarg.client.authclient.config.RedisConnectionConfigs;
 import com.akgarg.client.authclient.config.RedisConnectionPoolConfigs;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +18,7 @@ public class BeanConfig {
     @Bean
     public AuthClient inMemoryAuthClient() {
         return AuthClientBuilder.builder()
+                .apiVersion(ApiVersion.V1)
                 .cacheStrategy(AuthTokenCacheStrategy.IN_MEMORY)
                 .build();
     }
@@ -38,6 +40,7 @@ public class BeanConfig {
                 .cacheStrategy(AuthTokenCacheStrategy.REDIS)
                 .redisConnectionProperties(redisConnectionConfigs)
                 .redisConnectionPoolConfig(redisConnectionPoolConfigs)
+                .apiVersion(ApiVersion.V1)
                 .build();
     }
 

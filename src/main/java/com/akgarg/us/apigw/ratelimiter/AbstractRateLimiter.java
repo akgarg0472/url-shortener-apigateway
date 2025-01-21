@@ -85,6 +85,8 @@ public abstract class AbstractRateLimiter implements RateLimiter {
                 } catch (Exception e) {
                     throw new RateLimiterConfigurationException("Failed to configure rate limit for " + path, e);
                 }
+            } else {
+                allowedRequests.put(path, 1);
             }
         }
     }
