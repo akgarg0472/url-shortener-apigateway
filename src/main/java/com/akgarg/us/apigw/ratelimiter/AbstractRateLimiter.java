@@ -32,6 +32,7 @@ public abstract class AbstractRateLimiter implements RateLimiter {
      * <li>{@link ApiRoutes#PROFILE_API_PATH}: 10 requests for the interval</li>
      * <li>{@link ApiRoutes#PAYMENT_API_PATH}: 10 requests for the interval</li>
      * <li>{@link ApiRoutes#GENERIC_API_PATH}: 50 requests for the interval</li>
+     * <li>{@link ApiRoutes#PAYPAL_WEBHOOK_API_PATH}: 100 requests for the interval</li>
      * </ul>
      * </p>
      */
@@ -46,6 +47,7 @@ public abstract class AbstractRateLimiter implements RateLimiter {
         allowedRequests.put(ApiRoutes.PAYMENT_API_PATH, 10);
         allowedRequests.put(ApiRoutes.GENERIC_API_PATH, 50);
         allowedRequests.put(ApiRoutes.AUTH_API_PATH, 10);
+        allowedRequests.put(ApiRoutes.PAYPAL_WEBHOOK_API_PATH, 100);
     }
 
     /**

@@ -12,7 +12,7 @@
 
     <groupId>com.akgarg.us.apigw</groupId>
     <artifactId>ApiGateway</artifactId>
-    <version>2.6.0</version>
+    <version>2.6.1</version>
     <name>UrlShortener Api Gateway</name>
     <description>Api Gateway for URL Shortener project</description>
 

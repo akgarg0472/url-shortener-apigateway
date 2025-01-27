@@ -45,6 +45,7 @@ public class RateLimiterFilter extends AbstractApiGatewayFilter {
             }""";
 
     static {
+        rateLimiterPathStrategies.put(ApiRoutes.PAYPAL_WEBHOOK_API_PATH, RateLimitingStrategy.IP);
         rateLimiterPathStrategies.put(ApiRoutes.SUBSCRIPTION_PACKS_API_PATH, RateLimitingStrategy.IP);
         rateLimiterPathStrategies.put(ApiRoutes.URL_SHORTENER_API_PATH, RateLimitingStrategy.USER_ID);
         rateLimiterPathStrategies.put(ApiRoutes.SUBSCRIPTION_API_PATH, RateLimitingStrategy.USER_ID);

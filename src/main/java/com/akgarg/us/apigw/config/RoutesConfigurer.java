@@ -45,6 +45,11 @@ public class RoutesConfigurer {
                 .filters(filterSpec -> filterSpec.filters(requestIdFilter, rateLimiterFilter, authTokenFilter))
                 .uri("lb://urlshortener-profile-service"));
 
+        router.route("urlshortener-payment-service-paypal-webhook", r -> r
+                .path(ApiRoutes.PAYPAL_WEBHOOK_API_PATH)
+                .filters(filterSpec -> filterSpec.filters(requestIdFilter, rateLimiterFilter))
+                .uri("lb://urlshortener-payment-service"));
+
         router.route("urlshortener-payment-service", r -> r
                 .path(ApiRoutes.PAYMENT_API_PATH)
                 .filters(filterSpec -> filterSpec.filters(requestIdFilter, rateLimiterFilter, authTokenFilter))
