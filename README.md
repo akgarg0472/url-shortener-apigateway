@@ -73,27 +73,32 @@ usage by limiting the number of requests clients can make.
 
 ```bash
 RATE_LIMITER_LIMITS_PER_MINUTE_API_V1_AUTH=10
-RATE_LIMITER_LIMITS_PER_MINUTE_API_V1_URLSHORTENER=10
-RATE_LIMITER_LIMITS_PER_MINUTE_API_V1_STATISTICS=10
-RATE_LIMITER_LIMITS_PER_MINUTE_API_V1_PROFILES=10
-RATE_LIMITER_LIMITS_PER_MINUTE_API_V1_PAYMENTS=10
+RATE_LIMITER_LIMITS_PER_MINUTE_API_V1_URLSHORTENER=5
+RATE_LIMITER_LIMITS_PER_MINUTE_API_V1_STATISTICS=20
+RATE_LIMITER_LIMITS_PER_MINUTE_API_V1_PROFILES=20
+RATE_LIMITER_LIMITS_PER_MINUTE_API_V1_PAYMENTS=20
+RATE_LIMITER_LIMITS_PER_MINUTE_API_V1_SUBSCRIPTIONS=20
+RATE_LIMITER_LIMITS_PER_MINUTE_API_V1_SUBSCRIPTIONS_PACKS=50
 RATE_LIMITER_LIMITS_PER_MINUTE_ALL=50
 ```
 
 **Breakdown of the Configuration**:
 
-- **`RATE_LIMITER_LIMITS_PER_MINUTE_API_V1_AUTH`**: The API path related to authentication is limited to **10 requests
-  per minute**.
-- **`RATE_LIMITER_LIMITS_PER_MINUTE_API_V1_URLSHORTENER`**: The API path for URL shortening is limited to **10 requests
-  per minute**.
-- **`RATE_LIMITER_LIMITS_PER_MINUTE_API_V1_STATISTICS`**: The API path for fetching statistics is limited to **10
-  requests per minute**.
-- **`RATE_LIMITER_LIMITS_PER_MINUTE_API_V1_PROFILES`**: The API path for user profiles is limited to **10 requests per
-  minute**.
-- **`RATE_LIMITER_LIMITS_PER_MINUTE_API_V1_PAYMENTS`**: The API path for payments is limited to **10 requests per minute
-  **.
-- **`RATE_LIMITER_LIMITS_PER_MINUTE_ALL`**: A global catch-all for all other paths, limited to **50 requests per minute
-  **.
+- **RATE_LIMITER_LIMITS_PER_MINUTE_API_V1_AUTH**: Sets the limit of 10 requests per minute for `/api/v1/auth/**`.
+- **RATE_LIMITER_LIMITS_PER_MINUTE_API_V1_URLSHORTENER**: Sets the limit of 5 requests per minute for
+  `/api/v1/urlshortener/**`.
+- **RATE_LIMITER_LIMITS_PER_MINUTE_API_V1_STATISTICS**: Sets the limit of 20 requests per minute for
+  `/api/v1/statistics/**`.
+- **RATE_LIMITER_LIMITS_PER_MINUTE_API_V1_PROFILES**: Sets the limit of 20 requests per minute for
+  `/api/v1/profiles/**`.
+- **RATE_LIMITER_LIMITS_PER_MINUTE_API_V1_PAYMENTS**: Sets the limit of 20 requests per minute for
+  `/api/v1/payments/**`.
+- **RATE_LIMITER_LIMITS_PER_MINUTE_API_V1_SUBSCRIPTIONS**: Sets the limit of 20 requests per minute for
+  `/api/v1/subscriptions/**`.
+- **RATE_LIMITER_LIMITS_PER_MINUTE_API_V1_SUBSCRIPTIONS_PACKS**: Sets the limit of 50 requests per minute for
+  `/api/v1/subscriptions/packs/**`.
+- **RATE_LIMITER_LIMITS_PER_MINUTE_ALL**: Sets the default limit of 50 requests per minute for any other endpoints (
+  `/**`).
 
 ## Docker Deployment
 
