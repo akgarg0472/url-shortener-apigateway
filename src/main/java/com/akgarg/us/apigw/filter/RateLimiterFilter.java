@@ -16,7 +16,8 @@ import reactor.core.publisher.Mono;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
+
+import static com.akgarg.us.apigw.utils.IpUtils.extractClientIp;
 
 @Slf4j
 @Component
@@ -65,21 +66,6 @@ public class RateLimiterFilter extends AbstractApiGatewayFilter {
     @SuppressWarnings("squid:S135")
     public Mono<Void> filter(final ServerWebExchange exchange, final GatewayFilterChain chain) {
         final var requestPath = exchange.getRequest().getURI().getPath();
-        final var clientIp = extractClientIp(exchange);
-
-        if (clientIp.isEmpty()) {
-            final var httpResponse = exchange.getResponse();
-            httpResponse.setStatusCode(HttpStatus.BAD_REQUEST);
-            httpResponse.getHeaders().add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-            return httpResponse.writeWith(Mono.just(httpResponse.bufferFactory().wrap(IP_FETCH_FAILURE_RESPONSE.getBytes())));
-        }
-
-        if (log.isInfoEnabled()) {
-            log.info("{\"method\": \"{}\", \"path\": \"{}\", \"client_ip\": \"{}\"}",
-                    exchange.getRequest().getMethod(),
-                    requestPath,
-                    clientIp.get());
-        }
 
         for (final var pathStrategy : rateLimiterPathStrategies.entrySet()) {
             if (!pathMatcher.match(pathStrategy.getKey(), requestPath)) {
@@ -100,6 +86,15 @@ public class RateLimiterFilter extends AbstractApiGatewayFilter {
 
                 isRateLimited = rateLimiter.isRateLimited(pathStrategy.getKey(), requestPath, userId.get());
             } else if (pathStrategy.getValue() == RateLimitingStrategy.IP) {
+                final var clientIp = extractClientIp(exchange);
+
+                if (clientIp.isEmpty()) {
+                    final var httpResponse = exchange.getResponse();
+                    httpResponse.setStatusCode(HttpStatus.BAD_REQUEST);
+                    httpResponse.getHeaders().add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+                    return httpResponse.writeWith(Mono.just(httpResponse.bufferFactory().wrap(IP_FETCH_FAILURE_RESPONSE.getBytes())));
+                }
+
                 isRateLimited = rateLimiter.isRateLimited(pathStrategy.getKey(), requestPath, clientIp.get());
             } else {
                 isRateLimited = true;
@@ -116,17 +111,6 @@ public class RateLimiterFilter extends AbstractApiGatewayFilter {
         }
 
         return chain.filter(exchange);
-    }
-
-    private Optional<String> extractClientIp(final ServerWebExchange exchange) {
-        final var ip = exchange.getRequest().getHeaders().getFirst("X-Forwarded-For");
-
-        if (ip != null && !ip.isEmpty()) {
-            return Optional.of(ip.split(",")[0].trim());
-        }
-
-        final var remoteAddress = exchange.getRequest().getRemoteAddress();
-        return remoteAddress != null ? Optional.ofNullable(remoteAddress.getAddress().getHostAddress()) : Optional.empty();
     }
 
 }
