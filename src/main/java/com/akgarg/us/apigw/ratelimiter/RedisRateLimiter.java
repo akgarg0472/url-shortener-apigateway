@@ -39,18 +39,19 @@ public class RedisRateLimiter extends AbstractRateLimiter {
 
         if (currentRequestCount == null) {
             valueOperations.set(key, 1, TTL, TimeUnit.MILLISECONDS);
-            log.trace("First request for key: {}. Rate limiting starts.", key);
+            log.debug("First request for key: {}. Rate limiting starts.", key);
             return false;
         }
 
         final var allowedRequests = AbstractRateLimiter.allowedRequests.get(apiRoute);
 
         if (allowedRequests == null) {
+            log.warn("No rate limit configuration found for route: {}.", apiRoute);
             return false;
         }
 
         if (currentRequestCount >= allowedRequests) {
-            log.trace("Rate limit exceeded for key: {}. Current count: {}, Allowed: {}", key, currentRequestCount, allowedRequests);
+            log.warn("Rate limit exceeded for key: {}. Current count: {}, Allowed: {}", key, currentRequestCount, allowedRequests);
             return true;
         }
 

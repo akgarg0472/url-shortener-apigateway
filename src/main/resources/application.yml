@@ -46,6 +46,7 @@ management:
 logging:
   level:
     com.akgarg.client.authclient: INFO
+    com.netflix.discovery.shared.resolver: DEBUG
 
 auth:
   client:
@@ -64,6 +65,7 @@ auth:
 rate-limiter:
   limits:
     per-minute:
+      "/api/v1/payments/paypal/webhook": 100
       "/api/v1/auth/**": 10
       "/api/v1/urlshortener/**": 5
       "/api/v1/statistics/**": 20

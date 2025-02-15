@@ -11,7 +11,8 @@ public final class ApiRoutes {
     public static final String PAYMENT_API_PATH = "/api/v1/payments/**";
     public static final String SUBSCRIPTION_API_PATH = "/api/v1/subscriptions/**";
     public static final String SUBSCRIPTION_PACKS_API_PATH = "/api/v1/subscriptions/packs/**";
-    public static final String PAYPAL_WEBHOOK_API_PATH = "/api/v1/payments/paypal/webhook/**";
+    @SuppressWarnings("all")
+    public static final String PAYPAL_WEBHOOK_API_PATH = "/api/v1/payments/paypal/webhook";
     public static final String GENERIC_API_PATH = "/**";
 
     private ApiRoutes() {
@@ -26,9 +27,9 @@ public final class ApiRoutes {
                 PROFILE_API_PATH,
                 PAYMENT_API_PATH,
                 SUBSCRIPTION_API_PATH,
-                GENERIC_API_PATH,
                 SUBSCRIPTION_PACKS_API_PATH,
-                PAYPAL_WEBHOOK_API_PATH
+                PAYPAL_WEBHOOK_API_PATH,
+                GENERIC_API_PATH
         );
     }
 

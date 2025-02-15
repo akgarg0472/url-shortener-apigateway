@@ -80,6 +80,7 @@ public class InMemoryRateLimiter extends AbstractRateLimiter {
         final var allowedRequests = AbstractRateLimiter.allowedRequests.get(apiRoute);
 
         if (allowedRequests == null) {
+            log.warn("No rate limit configuration found for route: {}.", apiRoute);
             return false;
         }
 
