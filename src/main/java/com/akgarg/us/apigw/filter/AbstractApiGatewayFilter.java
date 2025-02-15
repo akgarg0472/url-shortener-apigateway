@@ -9,7 +9,7 @@ import java.util.Optional;
 @Slf4j
 public abstract class AbstractApiGatewayFilter implements GatewayFilter {
 
-    private static final String USER_ID_HEADER_NAME = "X-USER-ID";
+    protected static final String USER_ID_HEADER_NAME = "X-USER-ID";
 
     Optional<String> extractUserIdFromRequestHeader(final HttpHeaders headers) {
         final var headerValues = headers.get(USER_ID_HEADER_NAME);

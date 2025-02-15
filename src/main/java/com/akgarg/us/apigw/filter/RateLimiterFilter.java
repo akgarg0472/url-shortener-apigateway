@@ -25,18 +25,21 @@ public class RateLimiterFilter extends AbstractApiGatewayFilter {
 
     private static final Map<String, RateLimitingStrategy> rateLimiterPathStrategies = new LinkedHashMap<>();
     private static final AntPathMatcher pathMatcher = new AntPathMatcher();
+
     private static final String IP_FETCH_FAILURE_RESPONSE = """
             {
                 "message": "Request validation Failed",
-                "description": "Unable to retrieve client IP address.",
+                "description": "Failed to extract client IP address.",
                 "code": 400
             }""";
+
     private static final String USER_ID_FETCH_FAILURE_RESPONSE = """
             {
-                "message": "Request validation Failed",
-                "description": "Unable to retrieve userId.",
-                "code": 400
-            }""";
+                "message": "Auth Failure",
+                "description": "Header %s is missing or has invalid value.",
+                "code": 401
+            }""".formatted(USER_ID_HEADER_NAME);
+
     private static final String RATE_LIMIT_EXCEEDED_RESPONSE = """
             {
                 "message": "Rate Limit Exceeded",
@@ -62,8 +65,21 @@ public class RateLimiterFilter extends AbstractApiGatewayFilter {
     @SuppressWarnings("squid:S135")
     public Mono<Void> filter(final ServerWebExchange exchange, final GatewayFilterChain chain) {
         final var requestPath = exchange.getRequest().getURI().getPath();
+        final var clientIp = extractClientIp(exchange);
 
-        log.debug("Checking rate limit for path: {}", requestPath);
+        if (clientIp.isEmpty()) {
+            final var httpResponse = exchange.getResponse();
+            httpResponse.setStatusCode(HttpStatus.BAD_REQUEST);
+            httpResponse.getHeaders().add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+            return httpResponse.writeWith(Mono.just(httpResponse.bufferFactory().wrap(IP_FETCH_FAILURE_RESPONSE.getBytes())));
+        }
+
+        if (log.isInfoEnabled()) {
+            log.info("{\"method\": \"{}\", \"path\": \"{}\", \"client_ip\": \"{}\"}",
+                    exchange.getRequest().getMethod(),
+                    requestPath,
+                    clientIp.get());
+        }
 
         for (final var pathStrategy : rateLimiterPathStrategies.entrySet()) {
             if (!pathMatcher.match(pathStrategy.getKey(), requestPath)) {
@@ -77,23 +93,16 @@ public class RateLimiterFilter extends AbstractApiGatewayFilter {
 
                 if (userId.isEmpty()) {
                     final var httpResponse = exchange.getResponse();
-                    httpResponse.setStatusCode(HttpStatus.BAD_REQUEST);
+                    httpResponse.setStatusCode(HttpStatus.UNAUTHORIZED);
                     httpResponse.getHeaders().add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
                     return httpResponse.writeWith(Mono.just(httpResponse.bufferFactory().wrap(USER_ID_FETCH_FAILURE_RESPONSE.getBytes())));
                 }
 
                 isRateLimited = rateLimiter.isRateLimited(pathStrategy.getKey(), requestPath, userId.get());
+            } else if (pathStrategy.getValue() == RateLimitingStrategy.IP) {
+                isRateLimited = rateLimiter.isRateLimited(pathStrategy.getKey(), requestPath, clientIp.get());
             } else {
-                final var ip = extractClientIp(exchange);
-
-                if (ip.isEmpty()) {
-                    final var httpResponse = exchange.getResponse();
-                    httpResponse.setStatusCode(HttpStatus.BAD_REQUEST);
-                    httpResponse.getHeaders().add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-                    return httpResponse.writeWith(Mono.just(httpResponse.bufferFactory().wrap(IP_FETCH_FAILURE_RESPONSE.getBytes())));
-                }
-
-                isRateLimited = rateLimiter.isRateLimited(pathStrategy.getKey(), requestPath, ip.get());
+                isRateLimited = true;
             }
 
             if (isRateLimited) {
@@ -113,8 +122,7 @@ public class RateLimiterFilter extends AbstractApiGatewayFilter {
         final var ip = exchange.getRequest().getHeaders().getFirst("X-Forwarded-For");
 
         if (ip != null && !ip.isEmpty()) {
-            final var ips = ip.split(",");
-            return Optional.of(ips[0].trim());
+            return Optional.of(ip.split(",")[0].trim());
         }
 
         final var remoteAddress = exchange.getRequest().getRemoteAddress();
