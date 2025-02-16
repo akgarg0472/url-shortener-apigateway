@@ -9,6 +9,7 @@ import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 
 @RequiredArgsConstructor
 @Configuration
@@ -21,6 +22,12 @@ public class RoutesConfigurer {
     @Bean
     public RouteLocator routeLocator(final RouteLocatorBuilder routeLocatorBuilder) {
         final var router = routeLocatorBuilder.routes();
+
+        router.route("favicon.ico", r -> r
+                .path("/favicon.ico")
+                .filters(filterSpec -> filterSpec.setStatus(HttpStatus.NO_CONTENT))
+                .uri("no://noop")
+        );
 
         router.route("auth_service", r -> r
                 .path(ApiRoutes.AUTH_API_PATH)

@@ -46,7 +46,7 @@ management:
 logging:
   level:
     com.akgarg.client.authclient: INFO
-    com.netflix.discovery.shared.resolver.aws.ConfigClusterResolver: DEBUG
+    com.netflix.discovery.shared.resolver.aws.ConfigClusterResolver: ERROR
 
 auth:
   client:
