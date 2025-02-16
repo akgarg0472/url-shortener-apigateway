@@ -1,7 +1,7 @@
 # URLShortener API Gateway
 
 ![Java Version](https://img.shields.io/badge/Java-21-orange)
-![version](https://img.shields.io/badge/version-2.6.5-blue)
+![version](https://img.shields.io/badge/version-2.6.6-blue)
 
 This project is a Spring Boot-based API Gateway for the URL Shortener project. It acts as a reverse proxy that routes
 incoming requests to various backend services in the microservices architecture of the URL Shortener system.

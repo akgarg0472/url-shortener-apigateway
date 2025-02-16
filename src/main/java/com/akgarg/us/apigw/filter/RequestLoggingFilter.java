@@ -2,6 +2,7 @@ package com.akgarg.us.apigw.filter;
 
 import com.akgarg.us.apigw.utils.IpUtils;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -13,6 +14,7 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.SignalType;
 
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -43,13 +45,21 @@ public class RequestLoggingFilter implements GlobalFilter, Ordered {
                                 "client_ip", clientIp
                         ).increment();
 
-                        meterRegistry.timer(
-                                "urlshortener_api_gateway_request_duration",
-                                "method", method,
-                                "path", requestPath,
-                                "status", String.valueOf(statusCode),
-                                "client_ip", clientIp
-                        ).record(duration, TimeUnit.MILLISECONDS);
+                        Timer.builder("urlshortener_api_gateway_request_duration")
+                                .tags("method", method,
+                                        "path", requestPath,
+                                        "status", String.valueOf(statusCode),
+                                        "client_ip", clientIp)
+                                .publishPercentileHistogram()
+                                .sla(Duration.ofMillis(100),
+                                        Duration.ofMillis(300),
+                                        Duration.ofMillis(500),
+                                        Duration.ofSeconds(1),
+                                        Duration.ofSeconds(3),
+                                        Duration.ofSeconds(5),
+                                        Duration.ofSeconds(10))
+                                .register(meterRegistry)
+                                .record(duration, TimeUnit.MILLISECONDS);
 
                         if (log.isInfoEnabled()) {
                             log.info("{\"method\": \"{}\", \"path\": \"{}\", \"client_ip\": \"{}\", \"status_code\": {}, \"response_time_ms\": {}}",
