@@ -46,24 +46,25 @@ The API Gateway will start, and you can access it at [http://localhost:8765](htt
 
 ## Environment Variables
 
-| Variable                                | Default Value                   | Description                                                                          |
-|-----------------------------------------|---------------------------------|--------------------------------------------------------------------------------------|
-| `API_GATEWAY_LOG_PATH`                  | `/tmp/logs/gateway`             | Path where Eureka logs will be stored.                                               |
-| `API_GATEWAY_LOG_LEVEL`                 | `INFO`                          | Log level for general application logs.                                              |
-| `API_GATEWAY_LOGGER_REF`                | `consoleLogger`                 | Reference name for the logger (`consoleLogger` or `fileLogger`).                     |
-| `AUTH_CLIENT_REDIS_HOST`                | `localhost`                     | Redis host address for the authentication service.                                   |
-| `AUTH_CLIENT_REDIS_PORT`                | `6379`                          | Redis port for the authentication service.                                           |
-| `AUTH_CLIENT_REDIS_POOL_MAX_TOTAL`      | `128`                           | Maximum number of connections in the Redis pool for the authentication service.      |
-| `AUTH_CLIENT_REDIS_POOL_MAX_IDLE`       | `128`                           | Maximum number of idle connections in the Redis pool for the authentication service. |
-| `AUTH_CLIENT_REDIS_POOL_MIN_IDLE`       | `16`                            | Minimum number of idle connections in the Redis pool for the authentication service. |
-| `SPRING_DATA_REDIS_HOST`                | `localhost`                     | Redis host for the Spring Data Redis connection.                                     |
-| `SPRING_DATA_REDIS_PORT`                | `6379`                          | Redis port for the Spring Data Redis connection.                                     |
-| `SPRING_DATA_REDIS_DATABASE`            | `4`                             | The Redis database number to use (default: 0).                                       |
-| `SPRING_DATA_REDIS_PASSWORD`            | `""`                            | Password for Redis connection (if required).                                         |
-| `SERVER_PORT`                           | `8765`                          | The port where the server will run.                                                  |
-| `EUREKA_CLIENT_REGISTER_WITH_EUREKA`    | `true`                          | Whether to register the service with Eureka or not.                                  |
-| `EUREKA_CLIENT_FETCH_REGISTRY`          | `true`                          | Whether to fetch the service registry from Eureka or not.                            |
-| `EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE` | `http://localhost:8761/eureka/` | The URL for the Eureka service registry.                                             |
+| Variable                                 | Default Value       | Description                                                                          |
+|------------------------------------------|---------------------|--------------------------------------------------------------------------------------|
+| `API_GATEWAY_LOG_PATH`                   | `/tmp/logs/gateway` | Path where gateway logs will be stored.                                              |
+| `API_GATEWAY_LOG_LEVEL`                  | `INFO`              | Log level for general application logs.                                              |
+| `API_GATEWAY_LOGGER_REF`                 | `consoleLogger`     | Reference name for the logger (`consoleLogger` or `fileLogger`).                     |
+| `AUTH_CLIENT_REDIS_HOST`                 | `localhost`         | Redis host address for the authentication service.                                   |
+| `AUTH_CLIENT_REDIS_PORT`                 | `6379`              | Redis port for the authentication service.                                           |
+| `AUTH_CLIENT_REDIS_POOL_MAX_TOTAL`       | `128`               | Maximum number of connections in the Redis pool for the authentication service.      |
+| `AUTH_CLIENT_REDIS_POOL_MAX_IDLE`        | `128`               | Maximum number of idle connections in the Redis pool for the authentication service. |
+| `AUTH_CLIENT_REDIS_POOL_MIN_IDLE`        | `16`                | Minimum number of idle connections in the Redis pool for the authentication service. |
+| `SPRING_DATA_REDIS_HOST`                 | `localhost`         | Redis host for the Spring Data Redis connection.                                     |
+| `SPRING_DATA_REDIS_PORT`                 | `6379`              | Redis port for the Spring Data Redis connection.                                     |
+| `SPRING_DATA_REDIS_DATABASE`             | `4`                 | The Redis database number to use (default: 0).                                       |
+| `SPRING_DATA_REDIS_PASSWORD`             | `""`                | Password for Redis connection (if required).                                         |
+| `SERVER_PORT`                            | `8765`              | The port where the server will run.                                                  |
+| `SPRING_CLOUD_CONSUL_DISCOVERY_REGISTER` | `true`              | Whether to register the service with Consul or not.                                  |
+| `SPRING_CLOUD_CONSUL_DISCOVERY_ENABLED`  | `true`              | Whether service discovery via Consul is enabled or not.                              |
+| `SPRING_CLOUD_CONSUL_HOST`               | `localhost`         | The Consul agent's hostname or IP address.                                           |
+| `SPRING_CLOUD_CONSUL_PORT`               | `8500`              | The port on which the Consul agent is listening.                                     |
 
 ## API Rate Limiting Configuration
 
