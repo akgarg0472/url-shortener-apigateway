@@ -1,19 +1,6 @@
 server:
   port: 8765
 
-eureka:
-  client:
-    register-with-eureka: true
-    fetch-registry: true
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
-    enabled: true
-    healthcheck:
-      enabled: true
-  instance:
-    status-page-url-path: /admin/management/info
-    health-check-url-path: /admin/management/health
-
 spring:
   application:
     name: urlshortener-api-gateway
@@ -25,6 +12,23 @@ spring:
       password:
   profiles:
     active: prod
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        service-name: ${spring.application.name}
+        instance-id: ${spring.application.name}-${spring.application.instance_id:${random.value}}
+        register: true
+        fail-fast: true
+        enabled: true
+        prefer-ip-address: true
+        health-check-interval: 30s
+        catalog-services-watch-timeout: 30
+        register-health-check: true
+        health-check-path: /admin/management/health
+        heartbeat:
+          reregister-service-on-failure: true
 
 management:
   info:
@@ -46,7 +50,6 @@ management:
 logging:
   level:
     com.akgarg.client.authclient: INFO
-    com.netflix.discovery.shared.resolver.aws.ConfigClusterResolver: ERROR
 
 auth:
   client:
