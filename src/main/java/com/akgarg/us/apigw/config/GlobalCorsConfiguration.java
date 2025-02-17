@@ -20,7 +20,6 @@ public class GlobalCorsConfiguration {
         corsConfig.setMaxAge(300L);
         corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         corsConfig.addAllowedHeader("*");
-        corsConfig.setAllowCredentials(true);
 
         final var corsConfigurationSource = new UrlBasedCorsConfigurationSource();
         corsConfigurationSource.registerCorsConfiguration("/**", corsConfig);
