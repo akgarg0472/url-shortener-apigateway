@@ -25,10 +25,14 @@ spring:
         prefer-ip-address: true
         catalog-services-watch-delay: 30000
         health-check-interval: 30s
-        register-health-check: off
-        health-check-path: /admin/management/health
+        register-health-check: true
         heartbeat:
+          enabled: true
+          ttl: 30s
           reregister-service-on-failure: true
+        deregister: true
+        health-check-critical-timeout: 30s
+        health-check-path: null
 
 management:
   info:
