@@ -86,7 +86,8 @@ public class AuthTokenFilter extends AbstractApiGatewayFilter {
         final var authServiceInstances = discoveryClient.getInstances(AUTH_SERVICE_NAME);
 
         authServiceInstances.forEach(instance -> {
-            final var endpoint = new AuthServiceEndpoint(instance.getScheme(), instance.getHost(), instance.getPort());
+            final var instanceUri = instance.getUri();
+            final var endpoint = new AuthServiceEndpoint(instanceUri.getScheme(), instanceUri.getHost(), instanceUri.getPort());
             endpoints.add(endpoint);
         });
 
