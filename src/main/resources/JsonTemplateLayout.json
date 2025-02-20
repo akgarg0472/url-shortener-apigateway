@@ -1,0 +1,36 @@
+{
+  "service": "${serviceName}",
+  "host": "${sys:LOGGING_HOST:-127.0.0.1}",
+  "port": "${sys:LOGGING_PORT:-${env:SERVER_PORT:-null}}",
+  "timestamp": {
+    "$resolver": "timestamp",
+    "pattern": {
+      "format": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+      "timeZone": "UTC"
+    }
+  },
+  "thread": {
+    "$resolver": "thread",
+    "field": "name"
+  },
+  "level": {
+    "$resolver": "level",
+    "field": "name"
+  },
+  "logger": {
+    "$resolver": "logger",
+    "field": "name"
+  },
+  "requestId": {
+    "$resolver": "mdc",
+    "key": "requestId"
+  },
+  "message": {
+    "$resolver": "message",
+    "stringified": true
+  },
+  "stackTrace": {
+    "$resolver": "exception",
+    "field": "stackTrace"
+  }
+}

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+    <Properties>
+        <Property name="serviceName">urlshortener-api-gateway</Property>
+        <Property name="enableConsoleLogging">${env:LOGGING_CONSOLE_ENABLED:-false}</Property>
+        <Property name="enableFileLogging">${env:LOGGING_FILE_ENABLED:-false}</Property>
+        <Property name="loggingFileBasePath">${env:LOGGING_FILE_BASE_PATH:-/tmp}</Property>
+        <Property name="logLevel">${env:LOGGING_LEVEL:-INFO}</Property>
+        <Property name="enableStreamingLogs">${env:LOGGING_STREAM_ENABLED:-false}</Property>
+        <Property name="loggingStreamHost">${env:LOGGING_STREAM_HOST:-localhost}</Property>
+        <Property name="loggingStreamPort">${env:LOGGING_STREAM_PORT:-5000}</Property>
+        <Property name="loggingStreamProtocol">${env:LOGGING_STREAM_PROTOCOL:-TCP}</Property>
+    </Properties>
+
+    <Appenders>
+        <Null name="NullAppender"/>
+
+        <Routing name="ConsoleRouter">
+            <Routes pattern="${enableConsoleLogging}">
+                <Route key="true">
+                    <Console name="Console" target="SYSTEM_OUT">
+                        <JsonTemplateLayout eventTemplateUri="classpath:JsonTemplateLayout.json"
+                                            stackTraceEnabled="true"/>
+                    </Console>
+                </Route>
+                <Route key="default">
+                    <AppenderRef ref="NullAppender"/>
+                </Route>
+            </Routes>
+        </Routing>
+
+        <Routing name="FileRouter">
+            <Routes pattern="${enableFileLogging}">
+                <Route key="true">
+                    <RollingFile name="RollingFile" fileName="${loggingFileBasePath}/urlshortener-api-gateway.log"
+                                 filePattern="${loggingFileBasePath}/urlshortener-api-gateway_%d{yyyy-MM-dd-HH}.log.gz">
+                        <JsonTemplateLayout eventTemplateUri="classpath:JsonTemplateLayout.json"
+                                            stackTraceEnabled="true"/>
+                        <Policies>
+                            <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                        </Policies>
+                    </RollingFile>
+                </Route>
+                <Route key="default">
+                    <AppenderRef ref="NullAppender"/>
+                </Route>
+            </Routes>
+        </Routing>
+
+        <Routing name="StreamRouter">
+            <Routes pattern="${enableStreamingLogs}">
+                <Route key="true">
+                    <Socket name="LogStream" host="${loggingStreamHost}" port="${loggingStreamPort}"
+                            protocol="${loggingStreamProtocol}">
+                        <JsonTemplateLayout eventTemplateUri="classpath:JsonTemplateLayout.json"
+                                            stackTraceEnabled="true"/>
+                    </Socket>
+                </Route>
+                <Route key="default">
+                    <AppenderRef ref="NullAppender"/>
+                </Route>
+            </Routes>
+        </Routing>
+    </Appenders>
+
+    <Loggers>
+        <Root level="INFO">
+            <AppenderRef ref="ConsoleRouter"/>
+            <AppenderRef ref="FileRouter"/>
+        </Root>
+
+        <Logger name="com.akgarg" level="${logLevel}">
+            <AppenderRef ref="StreamRouter"/>
+        </Logger>
+    </Loggers>
+</Configuration>

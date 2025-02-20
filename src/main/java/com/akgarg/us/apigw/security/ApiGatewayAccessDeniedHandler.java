@@ -14,6 +14,8 @@ import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
 
+import static com.akgarg.us.apigw.filter.RequestIdFilter.REQUEST_ID_HEADER_NAME;
+
 @Component
 @AllArgsConstructor
 public class ApiGatewayAccessDeniedHandler implements ServerAccessDeniedHandler {
@@ -41,7 +43,7 @@ public class ApiGatewayAccessDeniedHandler implements ServerAccessDeniedHandler 
     }
 
     private String extractRequestId(ServerWebExchange exchange) {
-        return exchange.getRequest().getHeaders().getFirst("X-Request-ID");
+        return exchange.getRequest().getHeaders().getFirst(REQUEST_ID_HEADER_NAME);
     }
 
 }

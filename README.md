@@ -1,7 +1,7 @@
 # URLShortener API Gateway
 
 ![Java Version](https://img.shields.io/badge/Java-21-orange)
-![version](https://img.shields.io/badge/version-2.7.3-blue)
+![version](https://img.shields.io/badge/version-2.8.0-blue)
 
 This project is a Spring Boot-based API Gateway for the URL Shortener project. It acts as a reverse proxy that routes
 incoming requests to various backend services in the microservices architecture of the URL Shortener system.
@@ -46,25 +46,56 @@ The API Gateway will start, and you can access it at [http://localhost:8765](htt
 
 ## Environment Variables
 
-| Variable                                 | Default Value       | Description                                                                          |
-|------------------------------------------|---------------------|--------------------------------------------------------------------------------------|
-| `API_GATEWAY_LOG_PATH`                   | `/tmp/logs/gateway` | Path where gateway logs will be stored.                                              |
-| `API_GATEWAY_LOG_LEVEL`                  | `INFO`              | Log level for general application logs.                                              |
-| `API_GATEWAY_LOGGER_REF`                 | `consoleLogger`     | Reference name for the logger (`consoleLogger` or `fileLogger`).                     |
-| `AUTH_CLIENT_REDIS_HOST`                 | `localhost`         | Redis host address for the authentication service.                                   |
-| `AUTH_CLIENT_REDIS_PORT`                 | `6379`              | Redis port for the authentication service.                                           |
-| `AUTH_CLIENT_REDIS_POOL_MAX_TOTAL`       | `128`               | Maximum number of connections in the Redis pool for the authentication service.      |
-| `AUTH_CLIENT_REDIS_POOL_MAX_IDLE`        | `128`               | Maximum number of idle connections in the Redis pool for the authentication service. |
-| `AUTH_CLIENT_REDIS_POOL_MIN_IDLE`        | `16`                | Minimum number of idle connections in the Redis pool for the authentication service. |
-| `SPRING_DATA_REDIS_HOST`                 | `localhost`         | Redis host for the Spring Data Redis connection.                                     |
-| `SPRING_DATA_REDIS_PORT`                 | `6379`              | Redis port for the Spring Data Redis connection.                                     |
-| `SPRING_DATA_REDIS_DATABASE`             | `4`                 | The Redis database number to use (default: 0).                                       |
-| `SPRING_DATA_REDIS_PASSWORD`             | `""`                | Password for Redis connection (if required).                                         |
-| `SERVER_PORT`                            | `8765`              | The port where the server will run.                                                  |
-| `SPRING_CLOUD_CONSUL_DISCOVERY_REGISTER` | `true`              | Whether to register the service with Consul or not.                                  |
-| `SPRING_CLOUD_CONSUL_DISCOVERY_ENABLED`  | `true`              | Whether service discovery via Consul is enabled or not.                              |
-| `SPRING_CLOUD_CONSUL_HOST`               | `localhost`         | The Consul agent's hostname or IP address.                                           |
-| `SPRING_CLOUD_CONSUL_PORT`               | `8500`              | The port on which the Consul agent is listening.                                     |
+| Variable                                 | Default Value | Description                                                                          |
+|------------------------------------------|---------------|--------------------------------------------------------------------------------------|
+| `AUTH_CLIENT_REDIS_HOST`                 | `localhost`   | Redis host address for the authentication service.                                   |
+| `AUTH_CLIENT_REDIS_PORT`                 | `6379`        | Redis port for the authentication service.                                           |
+| `AUTH_CLIENT_REDIS_POOL_MAX_TOTAL`       | `128`         | Maximum number of connections in the Redis pool for the authentication service.      |
+| `AUTH_CLIENT_REDIS_POOL_MAX_IDLE`        | `128`         | Maximum number of idle connections in the Redis pool for the authentication service. |
+| `AUTH_CLIENT_REDIS_POOL_MIN_IDLE`        | `16`          | Minimum number of idle connections in the Redis pool for the authentication service. |
+| `SPRING_DATA_REDIS_HOST`                 | `localhost`   | Redis host for the Spring Data Redis connection.                                     |
+| `SPRING_DATA_REDIS_PORT`                 | `6379`        | Redis port for the Spring Data Redis connection.                                     |
+| `SPRING_DATA_REDIS_DATABASE`             | `4`           | The Redis database number to use (default: 0).                                       |
+| `SPRING_DATA_REDIS_PASSWORD`             | `""`          | Password for Redis connection (if required).                                         |
+| `SERVER_PORT`                            | `8765`        | The port where the server will run.                                                  |
+| `SPRING_CLOUD_CONSUL_DISCOVERY_REGISTER` | `true`        | Whether to register the service with Consul or not.                                  |
+| `SPRING_CLOUD_CONSUL_DISCOVERY_ENABLED`  | `true`        | Whether service discovery via Consul is enabled or not.                              |
+| `SPRING_CLOUD_CONSUL_HOST`               | `localhost`   | The Consul agent's hostname or IP address.                                           |
+| `SPRING_CLOUD_CONSUL_PORT`               | `8500`        | The port on which the Consul agent is listening.                                     |
+
+## Logging Configuration
+
+The URL Shortener Service uses environment variables for logging configuration. Below are the available environment
+variables that you can customize:
+
+- **LOGGING_CONSOLE_ENABLED**: Enables or disables console-based logging.
+    - Default value: `false`
+    - Allowed values: `true`, `false`
+
+- **LOGGING_FILE_ENABLED**: Enables or disables file-based logging.
+    - Default value: `false`
+    - Allowed values: `true`, `false`
+
+- **LOGGING_FILE_BASE_PATH**: Specifies the base path for log files.
+    - Default value: `/tmp`
+
+- **LOGGING_LEVEL**: Specifies the log level for the application.
+    - Default value: `INFO`
+    - Allowed values: `DEBUG`, `INFO`, `WARN`, `ERROR`
+
+- **LOGGING_STREAM_ENABLED**: Enables or disables streaming logs.
+    - Default value: `false`
+    - Allowed values: `true`, `false`
+
+- **LOGGING_STREAM_HOST**: Specifies the host for streaming logs.
+    - Default value: `localhost`
+
+- **LOGGING_STREAM_PORT**: Specifies the port for streaming logs.
+    - Default value: `5000`
+
+- **LOGGING_STREAM_PROTOCOL**: Specifies the protocol used for log streaming.
+    - Default value: `TCP`
+    - Allowed values: `TCP`, `UDP`
 
 ## API Rate Limiting Configuration
 

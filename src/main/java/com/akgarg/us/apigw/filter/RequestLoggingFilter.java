@@ -17,6 +17,8 @@ import reactor.core.publisher.SignalType;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
+import static com.akgarg.us.apigw.filter.RequestIdFilter.REQUEST_ID_HEADER_NAME;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -36,6 +38,7 @@ public class RequestLoggingFilter implements GlobalFilter, Ordered {
                         final var clientIp = IpUtils.extractClientIp(exchange).orElse("0.0.0.0");
                         final var statusCode = exchange.getResponse().getStatusCode() != null ? exchange.getResponse().getStatusCode().value() : HttpStatus.OK.value();
                         final var duration = System.currentTimeMillis() - startTime;
+                        final var requestId = exchange.getRequest().getHeaders().getFirst(REQUEST_ID_HEADER_NAME);
 
                         meterRegistry.counter(
                                 "urlshortener_api_gateway_requests_total",
@@ -62,7 +65,8 @@ public class RequestLoggingFilter implements GlobalFilter, Ordered {
                                 .record(duration, TimeUnit.MILLISECONDS);
 
                         if (log.isInfoEnabled()) {
-                            log.info("{\"method\": \"{}\", \"path\": \"{}\", \"client_ip\": \"{}\", \"status_code\": {}, \"response_time_ms\": {}}",
+                            log.info("{\"requestId\": \"{}\", \"method\": \"{}\", \"path\": \"{}\", \"client_ip\": \"{}\", \"status_code\": {}, \"response_time_ms\": {}}",
+                                    requestId,
                                     method,
                                     requestPath,
                                     clientIp,

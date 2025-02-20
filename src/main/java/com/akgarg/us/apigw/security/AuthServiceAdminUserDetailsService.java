@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static com.akgarg.us.apigw.filter.RequestIdFilter.REQUEST_ID_HEADER_NAME;
+
 @Slf4j
 @Component
 @Profile("prod")
@@ -29,7 +31,6 @@ public class AuthServiceAdminUserDetailsService implements ReactiveUserDetailsSe
 
     private static final ParameterizedTypeReference<Map<String, Object>> parameterizedTypeReference = new ParameterizedTypeReference<>() {
     };
-    private static final String REQUEST_ID_HEADER_NAME = "X-Request-ID";
 
     private final WebClient.Builder authServiceWebClientBuilder;
     private final Environment environment;

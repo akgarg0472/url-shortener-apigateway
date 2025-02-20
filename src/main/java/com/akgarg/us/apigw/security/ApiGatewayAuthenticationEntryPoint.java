@@ -14,6 +14,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import static com.akgarg.us.apigw.filter.RequestIdFilter.REQUEST_ID_HEADER_NAME;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -44,7 +46,7 @@ public class ApiGatewayAuthenticationEntryPoint implements ServerAuthenticationE
     }
 
     private String extractRequestId(final ServerWebExchange exchange) {
-        return exchange.getRequest().getHeaders().getFirst("X-Request-ID");
+        return exchange.getRequest().getHeaders().getFirst(REQUEST_ID_HEADER_NAME);
     }
 
 }

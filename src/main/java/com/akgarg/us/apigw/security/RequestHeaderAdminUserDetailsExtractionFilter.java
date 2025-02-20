@@ -1,5 +1,6 @@
 package com.akgarg.us.apigw.security;
 
+import jakarta.annotation.Nonnull;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,7 +16,7 @@ import reactor.util.context.Context;
 @Slf4j
 @Component
 @AllArgsConstructor
-@SuppressWarnings("NullableProblems")
+//@SuppressWarnings("NullableProblems")
 public class RequestHeaderAdminUserDetailsExtractionFilter implements WebFilter {
 
     private static final String AUTH_SET_CONTEXT_KEY = "authenticationSet";
@@ -24,7 +25,7 @@ public class RequestHeaderAdminUserDetailsExtractionFilter implements WebFilter 
     private final ReactiveUserDetailsService userDetailsService;
 
     @Override
-    public Mono<Void> filter(final ServerWebExchange exchange, final WebFilterChain filterChain) {
+    public Mono<Void> filter(@Nonnull final ServerWebExchange exchange, @Nonnull final WebFilterChain filterChain) {
         if (!AdminEndpointConfig.isAdminEndpoint(exchange.getRequest().getPath().value(), exchange.getRequest().getMethod())) {
             return filterChain.filter(exchange);
         }
@@ -35,13 +36,11 @@ public class RequestHeaderAdminUserDetailsExtractionFilter implements WebFilter 
             }
 
             final var username = exchange.getRequest().getHeaders().getFirst(USER_ID_HEADER_NAME);
-            final var requestId = extractRequestId(exchange);
 
-            log.info("{} checking if '{}' is admin user", requestId, username);
+            log.info("Checking if '{}' is admin user", username);
 
             if (username != null && !username.isBlank()) {
                 return authenticateUser(username)
-                        .doOnNext(authToken -> log.info("{} {} user is admin", requestId, username))
                         .flatMap(authToken -> filterChain.filter(exchange)
                                 .contextWrite(ReactiveSecurityContextHolder.withAuthentication(authToken))
                                 .contextWrite(Context.of(AUTH_SET_CONTEXT_KEY, true)));
@@ -49,14 +48,6 @@ public class RequestHeaderAdminUserDetailsExtractionFilter implements WebFilter 
 
             return filterChain.filter(exchange);
         });
-    }
-
-    private String extractRequestId(final ServerWebExchange exchange) {
-        final var reqIdHeader = exchange.getRequest().getHeaders().getFirst("X-Request-ID");
-        if (reqIdHeader != null) {
-            return reqIdHeader;
-        }
-        return exchange.getLogPrefix();
     }
 
     private Mono<UsernamePasswordAuthenticationToken> authenticateUser(final String username) {

@@ -15,7 +15,7 @@ public abstract class AbstractApiGatewayFilter implements GatewayFilter {
         final var headerValues = headers.get(USER_ID_HEADER_NAME);
 
         if (headerValues == null || headerValues.size() != 1) {
-            log.debug("User id header is unavailable or has multiple values");
+            log.debug("{} header is either unavailable or has multiple values", USER_ID_HEADER_NAME);
             return Optional.empty();
         }
 

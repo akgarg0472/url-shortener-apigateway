@@ -14,7 +14,7 @@ import org.springframework.core.env.Environment;
 @Configuration
 public class BeanConfig {
 
-    @Profile({"dev", "DEV"})
+    @Profile("dev")
     @Bean
     public AuthClient inMemoryAuthClient() {
         return AuthClientBuilder.builder()
@@ -23,7 +23,7 @@ public class BeanConfig {
                 .build();
     }
 
-    @Profile({"prod", "PROD"})
+    @Profile("prod")
     @Bean
     public AuthClient redisAuthClient(final Environment environment) {
         final var redisConnectionConfigs = new RedisConnectionConfigs(
@@ -35,7 +35,6 @@ public class BeanConfig {
                 Integer.parseInt(environment.getProperty("auth.client.redis.pool.max-idle", "128")),
                 Integer.parseInt(environment.getProperty("auth.client.redis.pool.min-idle", "16"))
         );
-
         return AuthClientBuilder.builder()
                 .cacheStrategy(AuthTokenCacheStrategy.REDIS)
                 .redisConnectionProperties(redisConnectionConfigs)

@@ -18,9 +18,9 @@ import reactor.core.publisher.Mono;
 
 import java.util.Map;
 
+@Slf4j
 @Component
 @Order(-2)
-@Slf4j
 public class JsonErrorWebExceptionHandler extends AbstractErrorWebExceptionHandler {
 
     /**
@@ -51,8 +51,7 @@ public class JsonErrorWebExceptionHandler extends AbstractErrorWebExceptionHandl
     @Override
     protected void logError(final ServerRequest request, final ServerResponse response, final Throwable throwable) {
         log.error(
-                "{}: '{}' in processing request: {}",
-                request.exchange().getLogPrefix(),
+                "'{}' in processing request: {}",
                 throwable.getClass().getSimpleName(),
                 throwable.getMessage()
         );
@@ -85,7 +84,6 @@ public class JsonErrorWebExceptionHandler extends AbstractErrorWebExceptionHandl
         final var errorHttpStatusCode = (int) errorAttributes.getOrDefault("status", 500);
         final var errorMessage = errorAttributes.getOrDefault("message", "Internal Server Error").toString();
         final var traceId = errorAttributes.get("requestId");
-
         return new ApiErrorResponse(
                 errorHttpStatusCode,
                 traceId,
