@@ -1,7 +1,7 @@
 # URLShortener API Gateway
 
 ![Java Version](https://img.shields.io/badge/Java-21-orange)
-![version](https://img.shields.io/badge/version-2.8.0-blue)
+![version](https://img.shields.io/badge/version-2.8.1-blue)
 
 This project is a Spring Boot-based API Gateway for the URL Shortener project. It acts as a reverse proxy that routes
 incoming requests to various backend services in the microservices architecture of the URL Shortener system.
@@ -79,7 +79,7 @@ variables that you can customize:
 - **LOGGING_FILE_BASE_PATH**: Specifies the base path for log files.
     - Default value: `/tmp`
 
-- **LOGGING_LEVEL**: Specifies the log level for the application.
+- **LOG_LEVEL**: Specifies the log level for the application.
     - Default value: `INFO`
     - Allowed values: `DEBUG`, `INFO`, `WARN`, `ERROR`
 

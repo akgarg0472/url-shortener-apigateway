@@ -5,7 +5,7 @@
         <Property name="enableConsoleLogging">${env:LOGGING_CONSOLE_ENABLED:-false}</Property>
         <Property name="enableFileLogging">${env:LOGGING_FILE_ENABLED:-false}</Property>
         <Property name="loggingFileBasePath">${env:LOGGING_FILE_BASE_PATH:-/tmp}</Property>
-        <Property name="logLevel">${env:LOGGING_LEVEL:-INFO}</Property>
+        <Property name="logLevel">${env:LOG_LEVEL:-INFO}</Property>
         <Property name="enableStreamingLogs">${env:LOGGING_STREAM_ENABLED:-false}</Property>
         <Property name="loggingStreamHost">${env:LOGGING_STREAM_HOST:-localhost}</Property>
         <Property name="loggingStreamPort">${env:LOGGING_STREAM_PORT:-5000}</Property>
