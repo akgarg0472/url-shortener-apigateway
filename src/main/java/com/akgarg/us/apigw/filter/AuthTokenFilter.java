@@ -10,6 +10,7 @@ import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
@@ -30,14 +31,14 @@ public class AuthTokenFilter extends AbstractApiGatewayFilter {
                 "code": 401
             }""";
     private static final String AUTH_SERVICE_NAME = "urlshortener-auth-service";
-    private static final String AUTHORIZATION_HEADER_NAME = "Authorization";
+    private static final String AUTH_COOKIE_NAME = "auth_token";
 
     private final DiscoveryClient discoveryClient;
     private final AuthClient authClient;
 
     @Override
     public Mono<Void> filter(final ServerWebExchange exchange, final GatewayFilterChain chain) {
-        final var tokenValidated = validateToken(exchange.getRequest().getHeaders());
+        final var tokenValidated = validateToken(exchange.getRequest());
 
         if (!tokenValidated) {
             log.info("Token validation failed for request: {}", exchange.getRequest().getPath());
@@ -50,9 +51,9 @@ public class AuthTokenFilter extends AbstractApiGatewayFilter {
         return chain.filter(exchange);
     }
 
-    private boolean validateToken(final HttpHeaders headers) {
-        final var userId = extractUserIdFromRequestHeader(headers);
-        final var authToken = extractAuthTokenFromRequestHeader(headers);
+    private boolean validateToken(final ServerHttpRequest httpRequest) {
+        final var userId = extractUserIdFromRequestHeader(httpRequest.getHeaders());
+        final var authToken = extractAuthTokenFromRequest(httpRequest);
 
         if (userId.isEmpty() || authToken.isEmpty()) {
             log.info("Token validation failed because user id or auth token is empty");
@@ -64,21 +65,21 @@ public class AuthTokenFilter extends AbstractApiGatewayFilter {
         return authClient.validate(validateTokenRequest);
     }
 
-    private Optional<String> extractAuthTokenFromRequestHeader(final HttpHeaders headers) {
-        final var headerValues = headers.get(AUTHORIZATION_HEADER_NAME);
+    private Optional<String> extractAuthTokenFromRequest(final ServerHttpRequest httpRequest) {
+        final var cookies = httpRequest.getCookies().get(AUTH_COOKIE_NAME);
 
-        if (headerValues == null || headerValues.size() != 1) {
-            log.debug("Auth header is unavailable or has multiple values");
+        if (cookies == null || cookies.size() != 1) {
+            log.debug("Auth token cookie is unavailable or has multiple values");
             return Optional.empty();
         }
 
-        final var authHeaderValue = headerValues.getFirst();
+        final var authCookie = cookies.getFirst().getValue();
 
-        if (authHeaderValue == null || authHeaderValue.isBlank() || !authHeaderValue.startsWith("Bearer ")) {
+        if (authCookie.isBlank()) {
             return Optional.empty();
         }
 
-        return Optional.of(authHeaderValue.substring(7));
+        return Optional.of(authCookie);
     }
 
     private List<AuthServiceEndpoint> getAuthServiceEndpoints() {

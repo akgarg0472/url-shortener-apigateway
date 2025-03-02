@@ -1,6 +1,10 @@
 server:
   port: 8765
 
+frontend:
+  base:
+    url: http://localhost:3000
+
 spring:
   application:
     name: urlshortener-api-gateway
@@ -53,7 +57,7 @@ management:
 
 logging:
   level:
-    com.akgarg.client.authclient: INFO
+    com.akgarg.client.authclient: DEBUG
 
 auth:
   client:
