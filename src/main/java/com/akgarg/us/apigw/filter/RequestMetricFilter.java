@@ -22,7 +22,7 @@ import static com.akgarg.us.apigw.filter.RequestIdFilter.REQUEST_ID_HEADER_NAME;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class RequestLoggingFilter implements GlobalFilter, Ordered {
+public class RequestMetricFilter implements GlobalFilter, Ordered {
 
     private final MeterRegistry meterRegistry;
 
@@ -65,7 +65,7 @@ public class RequestLoggingFilter implements GlobalFilter, Ordered {
                                 .record(duration, TimeUnit.MILLISECONDS);
 
                         if (log.isInfoEnabled()) {
-                            log.info("{\"requestId\": \"{}\", \"method\": \"{}\", \"path\": \"{}\", \"client_ip\": \"{}\", \"status_code\": {}, \"response_time_ms\": {}}",
+                            log.info("requestId: {}, method: {}, path: {}, client_ip: {}, status_code: {}, response_time_ms: {}",
                                     requestId,
                                     method,
                                     requestPath,
